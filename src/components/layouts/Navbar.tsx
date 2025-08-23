@@ -15,13 +15,15 @@ import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../ui/mode-toggle";
 import Hamburger from "@/assets/icons/Hamburger";
+import { driver } from "driver.js";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
 	{ href: "/", label: "Home" },
+	{ href: "/about", label: "About" },
 	{ href: "/features", label: "Features" },
 	{ href: "/pricing", label: "Pricing" },
-	{ href: "/about", label: "About" },
+	{ href: "/contact", label: "Contact" },
 	{ href: "/faq", label: "FAQ" },
 ];
 
@@ -36,6 +38,104 @@ export default function Navbar() {
 		handleScroll();
 
 		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
+
+	const driverObj = driver({
+		popoverClass: "driverjs-theme",
+		prevBtnText: "Prev",
+		nextBtnText: "Next",
+		stagePadding: 0,
+		showProgress: true,
+		overlayClickBehavior: "nextStep",
+		onDestroyed: () => {
+			localStorage.setItem("nav-tour", "completed");
+		},
+		allowKeyboardControl: true,
+		steps: [
+			{
+				element: "#navItem1",
+				popover: {
+					title: "Home Page",
+					description: "Welcome to the home page!",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem2",
+				popover: {
+					title: "About Page",
+					description:
+						"Learn more about our company, service story, mission, and our experienced team.",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem3",
+				popover: {
+					title: "Features Page",
+					description: "Explore the various features of our application.",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem4",
+				popover: {
+					title: "Pricing Page",
+					description:
+						"Check out our service fees and subscription tiers to find the right fit for you.",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem5",
+				popover: {
+					title: "Contact Page",
+					description:
+						"Get in touch with us or make an inquiry through our contact page.",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem6",
+				popover: {
+					title: "FAQ Page",
+					description: "Find answers to frequently asked questions.",
+					side: "bottom",
+					align: "start",
+				},
+			},
+			{
+				element: "#navItem7",
+				popover: {
+					title: "Log In",
+					description:
+						"Access your account by logging in. If you don't have an account, you can create one.",
+					side: "left",
+					align: "center",
+				},
+			},
+			{
+				element: "#navItem8",
+				popover: {
+					title: "Toggle Theme",
+					description:
+						"Switch between light and dark mode as per your preference.",
+					side: "left",
+					align: "center",
+				},
+			},
+		],
+	});
+
+	useEffect(() => {
+		if (localStorage.getItem("nav-tour") !== "completed") {
+			driverObj.drive();
+		}
 	}, []);
 
 	return (
@@ -103,6 +203,7 @@ export default function Navbar() {
 									<NavigationMenuItem key={index}>
 										<NavLink
 											to={link.href}
+											id={`navItem${index + 1}`}
 											className={({ isActive }) =>
 												cn(
 													"relative px-3 py-1.5 rounded-md font-medium transition-all duration-200",
@@ -126,9 +227,11 @@ export default function Navbar() {
 					</div>
 				</div>
 				{/* Right side */}
-				<div className="flex items-center gap-2">
+				<div className="flex items-center gap-4">
 					<Button asChild size="sm" className="text-sm">
-						<Link to="/login">Log In</Link>
+						<Link id="navItem7" to="/login">
+							Log In
+						</Link>
 					</Button>
 					<ModeToggle />
 				</div>

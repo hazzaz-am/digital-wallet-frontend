@@ -118,3 +118,127 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+/* Driver.js Custom Theme */
+.driver-popover.driverjs-theme {
+	background-color: var(--popover);
+	color: var(--popover-foreground);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.driver-popover.driverjs-theme .driver-popover-title {
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--popover-foreground);
+	margin-bottom: 8px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-title,
+.driver-popover.driverjs-theme .driver-popover-description,
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+	color: var(--popover-foreground);
+}
+
+.driver-popover.driverjs-theme .driver-popover-description {
+	color: var(--muted-foreground);
+	line-height: 1.5;
+}
+
+.driver-popover.driverjs-theme button {
+	flex: 1;
+	text-align: center;
+	background-color: var(--primary);
+	color: var(--primary-foreground);
+	border: 1px solid var(--primary);
+	text-shadow: none;
+	font-size: 14px;
+	font-weight: 500;
+	padding: 8px 16px;
+	border-radius: calc(var(--radius) - 2px);
+	transition: all 0.2s ease-in-out;
+	cursor: pointer;
+}
+
+.driver-popover.driverjs-theme button:hover {
+	background-color: var(--primary) / 0.9;
+	color: var(--primary-foreground) / 0.3;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px -2px var(--primary) / 0.3;
+}
+
+.driver-popover.driverjs-theme button:focus {
+	outline: none;
+	ring: 2px solid var(--ring);
+}
+
+/* Secondary button styles */
+.driver-popover.driverjs-theme button.driver-popover-prev-btn {
+	background-color: var(--secondary);
+	color: var(--secondary-foreground);
+	border: 1px solid var(--border);
+}
+
+.driver-popover.driverjs-theme button.driver-popover-prev-btn:hover {
+	background-color: var(--secondary) / 0.8;
+	color: var(--secondary-foreground);
+	box-shadow: 0 4px 8px -2px var(--secondary) / 0.3;
+}
+
+.driver-popover.driverjs-theme .driver-popover-navigation-btns {
+	justify-content: space-between;
+	gap: 8px;
+	margin-top: 6px;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn {
+	color: var(--muted-foreground);
+	background: none;
+	border: none;
+	padding: 4px;
+	border-radius: calc(var(--radius) - 4px);
+	transition: all 0.2s ease-in-out;
+}
+
+.driver-popover.driverjs-theme .driver-popover-close-btn:hover {
+	color: var(--foreground);
+	background-color: var(--accent);
+	transform: none;
+	box-shadow: none;
+}
+
+/* Arrow colors matching your theme */
+.driver-popover.driverjs-theme .driver-popover-arrow-side-left.driver-popover-arrow {
+	border-left-color: var(--popover);
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-right.driver-popover-arrow {
+	border-right-color: var(--popover);
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-top.driver-popover-arrow {
+	border-top-color: var(--popover);
+}
+
+.driver-popover.driverjs-theme .driver-popover-arrow-side-bottom.driver-popover-arrow {
+	border-bottom-color: var(--popover);
+}
+
+/* Progress indicator */
+.driver-popover.driverjs-theme .driver-popover-progress-text {
+	color: var(--muted-foreground);
+	font-size: 12px;
+	font-weight: 500;
+}
+
+/* Dark theme specific adjustments */
+.dark .driver-popover.driverjs-theme {
+	box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+}
+
+.driver-popover-footer {
+	display: flex;
+	flex-direction: column;
+	align-items: end !important;
+}
