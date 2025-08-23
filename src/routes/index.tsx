@@ -7,6 +7,7 @@ import ContactPage from "@/pages/Contact";
 import FAQPage from "@/pages/FAQ";
 import FeaturesPage from "@/pages/Features";
 import HomePage from "@/pages/Home";
+import NotFoundPage from "@/pages/NotFound";
 import PricingPage from "@/pages/Pricing";
 import { createBrowserRouter } from "react-router";
 
@@ -39,6 +40,10 @@ export const router = createBrowserRouter([
 				path: "/faq",
 				Component: FAQPage,
 			},
+			{
+				path: "*",
+				Component: NotFoundPage,
+			},
 		],
 	},
 	{
@@ -52,5 +57,9 @@ export const router = createBrowserRouter([
 	{
 		path: "/unauthorized",
 		Component: UnauthorizedPage,
+	},
+	{
+		path: "*",
+		Component: NotFoundPage,
 	},
 ]);
