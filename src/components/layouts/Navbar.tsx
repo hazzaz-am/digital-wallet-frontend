@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
 	NavigationMenu,
 	NavigationMenuItem,
-	NavigationMenuLink,
 	NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import {
@@ -11,8 +10,11 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import { Link } from "react-router";
+import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../ui/mode-toggle";
+import Hamburger from "@/assets/icons/Hamburger";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -24,8 +26,30 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
+	const [isScrolled, setIsScrolled] = useState(false);
+
+	useEffect(() => {
+		const handleScroll = () => {
+			setIsScrolled(window.scrollY > 10);
+		};
+		window.addEventListener("scroll", handleScroll);
+		handleScroll();
+
+		return () => window.removeEventListener("scroll", handleScroll);
+	}, []);
+
 	return (
-		<header className="border-b px-4 md:px-6">
+		<header
+			className={cn(
+				"border-b px-4 md:px-6 sticky top-0 z-50 transition-all duration-300",
+				isScrolled && [
+					"backdrop-blur-md bg-background/80",
+					"supports-[backdrop-filter]:bg-background/60",
+					"border-border/40",
+					"shadow-lg",
+				]
+			)}
+		>
 			<div className="flex h-16 items-center justify-between gap-4">
 				{/* Left side */}
 				<div className="flex items-center gap-2">
@@ -37,31 +61,7 @@ export default function Navbar() {
 								variant="ghost"
 								size="icon"
 							>
-								<svg
-									className="pointer-events-none"
-									width={16}
-									height={16}
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<path
-										d="M4 12L20 12"
-										className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
-									/>
-									<path
-										d="M4 12H20"
-										className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
-									/>
-									<path
-										d="M4 12H20"
-										className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
-									/>
-								</svg>
+								<Hamburger />
 							</Button>
 						</PopoverTrigger>
 						<PopoverContent align="start" className="w-36 p-1 md:hidden">
@@ -69,13 +69,22 @@ export default function Navbar() {
 								<NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
 									{navigationLinks.map((link, index) => (
 										<NavigationMenuItem key={index} className="w-full">
-											<NavigationMenuLink
-												asChild
-												href={link.href}
-												className="py-1.5"
+											<NavLink
+												to={link.href}
+												className={({ isActive }) =>
+													cn(
+														"block w-full px-3 py-1.5 text-left rounded-md transition-all duration-200",
+														"text-muted-foreground hover:text-foreground hover:bg-accent/50",
+														isActive && [
+															"text-primary",
+															"font-semibold",
+															"shadow-xs",
+														]
+													)
+												}
 											>
-												<Link to={link.href}>{link.label}</Link>
-											</NavigationMenuLink>
+												{link.label}
+											</NavLink>
 										</NavigationMenuItem>
 									))}
 								</NavigationMenuList>
@@ -92,13 +101,24 @@ export default function Navbar() {
 							<NavigationMenuList className="gap-2">
 								{navigationLinks.map((link, index) => (
 									<NavigationMenuItem key={index}>
-										<NavigationMenuLink
-											asChild
-											href={link.href}
-											className="text-muted-foreground hover:text-primary py-1.5 font-medium"
+										<NavLink
+											to={link.href}
+											className={({ isActive }) =>
+												cn(
+													"relative px-3 py-1.5 rounded-md font-medium transition-all duration-200",
+													"text-muted-foreground hover:text-foreground",
+													"hover:bg-accent/50",
+													"focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+													isActive && [
+														"text-primary",
+														"font-semibold",
+														"shadow-xs",
+													]
+												)
+											}
 										>
-											<Link to={link.href}>{link.label}</Link>
-										</NavigationMenuLink>
+											{link.label}
+										</NavLink>
 									</NavigationMenuItem>
 								))}
 							</NavigationMenuList>
