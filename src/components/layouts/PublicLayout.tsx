@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import Navbar from "./Navbar";
 import Footer from "./Footer";
+import Navbar from "./Navbar";
+import Scroll from "./Scroll";
 
 export default function PublicLayout({ children }: { children: ReactNode }) {
 	return (
@@ -8,6 +9,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
 			<Navbar />
 			<div className="grow">{children}</div>
 			<Footer />
+			<Scroll />
 		</section>
 	);
 }
