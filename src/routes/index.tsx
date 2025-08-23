@@ -3,6 +3,7 @@ import AboutPage from "@/pages/About";
 import LoginPage from "@/pages/auth/Login";
 import RegisterPage from "@/pages/auth/Register";
 import UnauthorizedPage from "@/pages/auth/Unauthorized";
+import CareersPage from "@/pages/Careers";
 import ContactPage from "@/pages/Contact";
 import FAQPage from "@/pages/FAQ";
 import FeaturesPage from "@/pages/Features";
@@ -23,6 +24,10 @@ export const router = createBrowserRouter([
 			{
 				path: "/about",
 				Component: AboutPage,
+			},
+			{
+				path: "/careers",
+				Component: CareersPage,
 			},
 			{
 				path: "/features",
