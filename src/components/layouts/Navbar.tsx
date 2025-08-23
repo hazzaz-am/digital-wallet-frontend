@@ -39,6 +39,12 @@ export default function Navbar() {
 
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
+	
+	useEffect(() => {
+		if (localStorage.getItem("nav-tour") !== "completed") {
+			driverObj.drive();
+		}
+	}, []);
 
 	const driverObj = driver({
 		popoverClass: "driverjs-theme",
@@ -131,12 +137,6 @@ export default function Navbar() {
 			},
 		],
 	});
-
-	useEffect(() => {
-		if (localStorage.getItem("nav-tour") !== "completed") {
-			driverObj.drive();
-		}
-	}, []);
 
 	return (
 		<header
