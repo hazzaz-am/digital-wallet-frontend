@@ -143,8 +143,8 @@ export default function Navbar() {
 			className={cn(
 				"border-b px-4 md:px-6 sticky top-0 z-50 transition-all duration-300",
 				isScrolled && [
-					"backdrop-blur-md bg-background/80",
-					"supports-[backdrop-filter]:bg-background/60",
+					"backdrop-blur-md bg-background/30",
+					"supports-[backdrop-filter]:bg-background/20",
 					"border-border/40",
 					"shadow-lg",
 				]
