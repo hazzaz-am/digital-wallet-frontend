@@ -237,7 +237,7 @@ export default function Navbar() {
 				{/* Right side */}
 				<div className="flex items-center gap-4">
 					{userInfo?.data ? (
-						<UserMenu phone={userInfo.data.phone} />
+						<UserMenu phone={userInfo.data.phone} role={userInfo.data.role.toLowerCase()} />
 					) : (
 						<Button asChild size="sm" className="text-sm">
 							<Link id="navItem7" to="/login">

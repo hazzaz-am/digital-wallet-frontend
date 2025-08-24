@@ -17,9 +17,11 @@ import { useAppDispatch } from "@/store/hooks";
 export default function UserMenu({
 	name = "",
 	phone,
+	role
 }: {
 	name?: string;
 	phone: string;
+	role: string;
 }) {
 	const [logout] = useLogoutMutation();
 	const dispatch = useAppDispatch();
@@ -50,7 +52,7 @@ export default function UserMenu({
 				<DropdownMenuGroup>
 					<DropdownMenuItem>
 						<BoltIcon size={16} className="opacity-60" aria-hidden="true" />
-						<Link to="/user/add-money">Dashboard</Link>
+						<Link to={`/${role}/me`}>Dashboard</Link>
 					</DropdownMenuItem>
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
