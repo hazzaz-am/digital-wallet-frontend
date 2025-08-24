@@ -4,3 +4,5 @@ export interface FAQItem {
   answer: string;
   category: string;
 }
+
+export type TRole = "USER" | "ADMIN" | "AGENT";
