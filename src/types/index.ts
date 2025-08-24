@@ -17,3 +17,18 @@ export interface ISidebarItem {
 		component: ComponentType;
 	}[];
 }
+
+export interface AgentData {
+	commissionRate: number;
+	approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
+}
+
+export interface UserProfile {
+	_id: string;
+	name?: string;
+	phone: string;
+	password?: string;
+	isDeleted: boolean;
+	role: "USER" | "AGENT" | "ADMIN";
+	agentData?: AgentData;
+}

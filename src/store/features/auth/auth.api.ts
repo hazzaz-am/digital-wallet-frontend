@@ -1,4 +1,5 @@
 import { baseApi } from "@/store/baseApi";
+import type { UserProfile } from "@/types";
 
 export const authApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
@@ -30,6 +31,28 @@ export const authApi = baseApi.injectEndpoints({
 			}),
 			providesTags: ["USER"],
 		}),
+		updateUserInfo: builder.mutation({
+			query: ({
+				id,
+				updatedData,
+			}: {
+				id: string;
+				updatedData: Partial<UserProfile>;
+			}) => ({
+				method: "PATCH",
+				url: `/user/${id}`,
+				data: updatedData,
+			}),
+			invalidatesTags: ["USER"],
+		}),
+		changePassword: builder.mutation({
+			query: (data) => ({
+				method: "POST",
+				url: "/auth/reset-password",
+				data,
+			}),
+			invalidatesTags: ["USER"],
+		}),
 	}),
 });
 
@@ -38,4 +61,6 @@ export const {
 	useLoginMutation,
 	useLogoutMutation,
 	useUserInfoQuery,
+	useUpdateUserInfoMutation,
+	useChangePasswordMutation,
 } = authApi;

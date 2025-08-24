@@ -1,4 +1,4 @@
-import Profile from "@/pages/admin/Profile";
+import Profile from "@/pages/dashboard/Profile";
 import type { ISidebarItem } from "@/types";
 import { lazy } from "react";
 
