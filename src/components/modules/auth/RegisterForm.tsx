@@ -15,7 +15,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PasswordInput from "@/components/ui/password-input";
 import PhoneInput from "@/components/ui/phone-input";
-import type { TRole } from "./../../../types/index";
 import {
 	Select,
 	SelectContent,
@@ -23,6 +22,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { useRegistrationMutation } from "@/store/features/auth/auth.api";
+import { toast } from "sonner";
 
 const ROLE_VALUES = ["USER", "AGENT"];
 
@@ -34,13 +35,33 @@ const registerSchema = z
 				error: "Phone number must be 10 digits",
 			})
 			.max(10, {
-				error: "Phone number must be 10 digits",
+				error: "Phone number can be maximum 10 digits",
 			}),
-		password: z.string().min(8, { error: "Password is too short" }),
+		password: z
+			.string()
+			.min(8, { error: "Password is too short" })
+			.regex(/^(?=.*[A-Z])/, {
+				error: "Password must contain at least 1 uppercase letter.",
+			})
+			.regex(/^(?=.*[!@#$%^&*])/, {
+				error: "Password must contain at least 1 special character.",
+			})
+			.regex(/^(?=.*\d)/, {
+				error: "Password must contain at least 1 number.",
+			}),
 		role: z.enum(ROLE_VALUES, { error: "Role is required" }),
 		confirmPassword: z
 			.string()
-			.min(8, { error: "Confirm Password is too short" }),
+			.min(8, { error: "Confirm Password is too short" })
+			.regex(/^(?=.*[A-Z])/, {
+				error: "Password must contain at least 1 uppercase letter.",
+			})
+			.regex(/^(?=.*[!@#$%^&*])/, {
+				error: "Password must contain at least 1 special character.",
+			})
+			.regex(/^(?=.*\d)/, {
+				error: "Password must contain at least 1 number.",
+			}),
 	})
 	.refine((data) => data.password === data.confirmPassword, {
 		message: "Password do not match",
@@ -51,7 +72,7 @@ export default function RegisterForm({
 	className,
 	...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-	// const [register] = useRegisterMutation();
+	const [userRegistration] = useRegistrationMutation();
 	const navigate = useNavigate();
 
 	const form = useForm<z.infer<typeof registerSchema>>({
@@ -65,20 +86,35 @@ export default function RegisterForm({
 	});
 
 	const onSubmit = async (data: z.infer<typeof registerSchema>) => {
+		const toastId = toast.loading("Creating user...");
 		const userInfo = {
 			role: data.role,
-			phone: data.phone,
+			phone: `+880${data.phone}`,
 			password: data.password,
 		};
 		console.log(userInfo);
-		// try {
-		// 	const result = await register(userInfo).unwrap();
-		// 	console.log(result);
-		// 	toast.success("User created successfully");
-		// 	navigate("/verify");
-		// } catch (error) {
-		// 	console.error(error);
-		// }
+		try {
+			const result = await userRegistration(userInfo).unwrap();
+
+			if (result.success) {
+				toast.success("User created successfully", { id: toastId });
+				navigate("/login");
+			}
+		} catch (error: any) {
+			console.error(error.data.message);
+			if (error?.data?.message === "Make sure to provide valid input") {
+				toast.error("Invalid input. Please check your data.", { id: toastId });
+			} else if (
+				error?.data?.message === "Account already exists with this phone number"
+			) {
+				toast.error(
+					"Account already exists, please use a different phone number or login to your account",
+					{
+						id: toastId,
+					}
+				);
+			}
+		}
 	};
 
 	return (

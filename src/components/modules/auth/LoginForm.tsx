@@ -7,16 +7,14 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import PasswordInput from "@/components/ui/password-input";
 import PhoneInput from "@/components/ui/phone-input";
-// import { envConfig } from "@/config";
 import { cn } from "@/lib/utils";
-// import { useLoginMutation } from "@/store/features/auth/authApi";
+import { useLoginMutation } from "@/store/features/auth/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-// import { toast } from "sonner";
+import { toast } from "sonner";
 import z from "zod";
 
 const loginFormSchema = z.object({
@@ -27,7 +25,7 @@ const loginFormSchema = z.object({
 			message: "Phone number must be 10 digits",
 		})
 		.max(10, {
-			message: "Phone number must be 10 digits",
+			message: "Phone number can be maximum 10 digits",
 		}),
 	password: z
 		.string()
@@ -38,6 +36,7 @@ export default function LoginForm({
 	className,
 	...props
 }: React.HTMLAttributes<HTMLDivElement>) {
+	const [loginUser] = useLoginMutation();
 	const navigate = useNavigate();
 	const form = useForm<z.infer<typeof loginFormSchema>>({
 		resolver: zodResolver(loginFormSchema),
@@ -49,29 +48,31 @@ export default function LoginForm({
 	// const [login] = useLoginMutation();
 
 	const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
+		const toastId = toast.loading("Logging in...");
 		const userInfo = {
 			phone: `+880${data.phone}`,
 			password: data.password,
 		};
 		console.log(userInfo);
-		// try {
-		// 	const res = await login(data).unwrap();
-		// 	if (res.success) {
-		// 		toast.success("Logged in successfully");
-		// 		navigate("/");
-	// 	}
-		// } catch (err: any) {
-		// 	console.error(err);
+		try {
+			const res = await loginUser(userInfo).unwrap();
+			if (res.success) {
+				toast.success("Logged in successfully", { id: toastId });
+				navigate("/");
+			}
+		} catch (err: any) {
+			console.error(err);
 
-		// 	if (err.data.message === "User is not verified") {
-		// 		toast.error("Your account is not verified");
-		// 		navigate("/verify", { state: data.email });
-		// 	}
+			if (err.data.message === "Password is incorrect") {
+				toast.error("Password is incorrect", { id: toastId });
+			}
 
-		// 	if (err.data.message === "Password does not match") {
-		// 		toast.error("Invalid credentials");
-		// 	}
-		// }
+			if (err.data.message === "User not found") {
+				toast.error("Account does not exist with this phone number", {
+					id: toastId,
+				});
+			}
+		}
 	};
 
 	return (
