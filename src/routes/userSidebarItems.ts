@@ -3,9 +3,9 @@ import { lazy } from "react";
 const Analytics = lazy(() => import("@/pages/user/Analytics"));
 const Profile = lazy(() => import("@/pages/dashboard/Profile"));
 const AddMoney = lazy(() => import("@/pages/user/AddMoney"));
-const AddWallet = lazy(() => import("@/pages/user/AddWallet"));
+const AddWallet = lazy(() => import("@/pages/dashboard/AddWallet"));
 const CashOut = lazy(() => import("@/pages/user/CashOut"));
-const MyWallet = lazy(() => import("@/pages/user/MyWallet"));
+const MyWallet = lazy(() => import("@/pages/dashboard/MyWallet"));
 const SendMoney = lazy(() => import("@/pages/user/SendMoney"));
 const Transactions = lazy(() => import("@/pages/user/Transactions"));
 
@@ -24,7 +24,7 @@ export const userSidebarItems: ISidebarItem[] = [
 		title: "Wallet",
 		items: [
 			{
-				title: "Add Wallet",
+				title: "Create New Wallet",
 				url: "/user/wallets/new",
 				component: AddWallet,
 			},

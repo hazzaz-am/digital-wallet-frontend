@@ -36,7 +36,7 @@ export const agentSidebarItems: ISidebarItem[] = [
 		title: "Wallet",
 		items: [
 			{
-				title: "Add Wallet",
+				title: "Create New Wallet",
 				url: "/agent/wallets/new",
 				component: AddWallet,
 			},
