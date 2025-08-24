@@ -1,3 +1,4 @@
+import Hamburger from "@/assets/icons/Hamburger";
 import Logo from "@/assets/icons/Logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +12,13 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { useUserInfoQuery } from "@/store/features/auth/auth.api";
+import { driver } from "driver.js";
 import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../ui/mode-toggle";
-import Hamburger from "@/assets/icons/Hamburger";
-import { driver } from "driver.js";
+import UserMenu from "../user-menu";
+import NavbarSkeleton from "./NavbarSkeleton";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -29,6 +32,7 @@ const navigationLinks = [
 
 export default function Navbar() {
 	const [isScrolled, setIsScrolled] = useState(false);
+	const { data: userInfo, isLoading } = useUserInfoQuery(undefined);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -39,7 +43,7 @@ export default function Navbar() {
 
 		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
-	
+
 	useEffect(() => {
 		if (localStorage.getItem("nav-tour") !== "completed") {
 			driverObj.drive();
@@ -138,6 +142,10 @@ export default function Navbar() {
 		],
 	});
 
+	if (isLoading) {
+		return <NavbarSkeleton isScrolled={isScrolled} />;
+	}
+
 	return (
 		<header
 			className={cn(
@@ -228,11 +236,16 @@ export default function Navbar() {
 				</div>
 				{/* Right side */}
 				<div className="flex items-center gap-4">
-					<Button asChild size="sm" className="text-sm">
-						<Link id="navItem7" to="/login">
-							Log In
-						</Link>
-					</Button>
+					{userInfo?.data ? (
+						<UserMenu phone={userInfo.data.phone} />
+					) : (
+						<Button asChild size="sm" className="text-sm">
+							<Link id="navItem7" to="/login">
+								Log In
+							</Link>
+						</Button>
+					)}
+
 					<ModeToggle />
 				</div>
 			</div>

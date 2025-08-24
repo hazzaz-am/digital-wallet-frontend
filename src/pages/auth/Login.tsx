@@ -1,8 +1,20 @@
 import Logo from "@/assets/icons/Logo";
-import { Link } from "react-router";
 import LoginForm from "@/components/modules/auth/LoginForm";
+import LoginSkeleton from "@/components/modules/auth/LoginSkeleton";
+import { useUserInfoQuery } from "@/store/features/auth/auth.api";
+import { Link, Navigate } from "react-router";
 
 export default function LoginPage() {
+	const { data: userInfo, isLoading } = useUserInfoQuery(undefined);
+
+	if (isLoading) {
+		return <LoginSkeleton />;
+	}
+
+	if (userInfo?.data) {
+		return <Navigate to="/" replace={true} />;
+	}
+
 	return (
 		<section className="">
 			<div className="flex flex-col gap-4 p-6 md:p-10">

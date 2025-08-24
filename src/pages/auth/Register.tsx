@@ -1,8 +1,20 @@
-import { Link } from "react-router";
+import { Link, Navigate } from "react-router";
 import Logo from "@/assets/icons/Logo";
 import RegisterForm from "@/components/modules/auth/RegisterForm";
+import LoginSkeleton from "@/components/modules/auth/LoginSkeleton";
+import { useUserInfoQuery } from "@/store/features/auth/auth.api";
 
 export default function RegisterPage() {
+	const { data: userInfo, isLoading } = useUserInfoQuery(undefined);
+
+	if (isLoading) {
+		return <LoginSkeleton />;
+	}
+
+	if (userInfo?.data) {
+		return <Navigate to="/" replace={true} />;
+	}
+
 	return (
 		<div>
 			<div className="flex flex-col gap-4 p-6 md:p-10">
