@@ -31,6 +31,8 @@ export interface UserProfile {
 	isDeleted: boolean;
 	role: "USER" | "AGENT" | "ADMIN";
 	agentData?: AgentData;
+	createdAt: string;
+	updatedAt: string;
 }
 
 export interface Transaction {
@@ -55,5 +57,5 @@ export interface IWallet {
 	updatedAt: string;
 	currency: string;
 	balance: number;
-	status: string
+	status: string;
 }
