@@ -3,9 +3,10 @@ import { baseApi } from "@/store/baseApi";
 export const transactionApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		getAllTransactions: builder.query({
-			query: () => ({
+			query: (params) => ({
 				method: "GET",
 				url: "/transaction/get-all-transactions",
+				params
 			}),
 			providesTags: ["TRANSACTION"],
 		}),

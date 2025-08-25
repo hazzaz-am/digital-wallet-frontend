@@ -1,9 +1,10 @@
+import AgentRequests from "@/pages/admin/AgentRequests";
+import AllUsers from "@/pages/admin/AllUsers";
+import AllWallets from "@/pages/admin/AllWallets";
+import Analytics from "@/pages/dashboard/Analytics";
 import Profile from "@/pages/dashboard/Profile";
+import Transactions from "@/pages/dashboard/Transactions";
 import type { ISidebarItem } from "@/types";
-import { lazy } from "react";
-
-const Analytics = lazy(() => import("@/pages/admin/Analytics"));
-const AllUsers = lazy(() => import("@/pages/admin/AllUsers"));
 
 export const adminSidebarItems: ISidebarItem[] = [
 	{
@@ -27,12 +28,17 @@ export const adminSidebarItems: ISidebarItem[] = [
 		],
 	},
 	{
-		title: "User Management",
+		title: "Account Management",
 		items: [
 			{
-				title: "Users",
-				url: "/admin/users",
+				title: "Accounts",
+				url: "/admin/all-accounts",
 				component: AllUsers,
+			},
+			{
+				title: "Agent Requests",
+				url: "/admin/agent-requests",
+				component: AgentRequests,
 			},
 		],
 	},
@@ -42,7 +48,7 @@ export const adminSidebarItems: ISidebarItem[] = [
 			{
 				title: "Transactions",
 				url: "/admin/transactions",
-				component: AllUsers,
+				component: Transactions,
 			},
 		],
 	},
@@ -52,7 +58,7 @@ export const adminSidebarItems: ISidebarItem[] = [
 			{
 				title: "Wallets",
 				url: "/admin/wallets",
-				component: AllUsers,
+				component: AllWallets,
 			},
 		],
 	},

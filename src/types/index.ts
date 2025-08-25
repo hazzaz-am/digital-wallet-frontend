@@ -46,3 +46,14 @@ export interface Transaction {
 	type: string;
 	updatedAt: string;
 }
+
+export interface IWallet {
+	_id: string;
+	userId: string;
+	type: string;
+	createdAt: string;
+	updatedAt: string;
+	currency: string;
+	balance: number;
+	status: string
+}

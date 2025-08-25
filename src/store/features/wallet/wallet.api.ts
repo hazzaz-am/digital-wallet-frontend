@@ -49,9 +49,10 @@ export const authApi = baseApi.injectEndpoints({
 			invalidatesTags: ["WALLET"],
 		}),
 		getWallets: builder.query({
-			query: () => ({
+			query: (params) => ({
 				method: "GET",
 				url: "/wallet/get-wallets",
+				params,
 			}),
 			providesTags: ["WALLET"],
 		}),
