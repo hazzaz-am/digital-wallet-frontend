@@ -1,0 +1,247 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import PhoneInput from "@/components/ui/phone-input";
+import {
+	useCashOutMutation,
+	useMyWalletQuery,
+} from "@/store/features/wallet/wallet.api";
+import CashOutSkeleton from "./CashOutSkeleton";
+
+export const cashOutZodSchema = z.object({
+	phone: z
+		.string({ error: "Phone Number must be string" })
+		.min(10, "Agent phone number must be at least 10 digits")
+		.max(10, "Agent phone number must be exactly 10 digits")
+		.regex(/^\d{10}$/, "Agent phone number must contain only digits"),
+	amount: z
+		.number({ error: "Amount must be a number" })
+		.positive("Amount must be greater than zero")
+		.min(100, "Minimum cash out amount is 100 BDT"),
+});
+
+type CashOutFormData = z.infer<typeof cashOutZodSchema>;
+
+export default function CashOut() {
+	const { data: walletData, isLoading: walletLoading } =
+		useMyWalletQuery(undefined);
+	const [cashOut, { isLoading: isSubmitting }] = useCashOutMutation();
+
+	const form = useForm<CashOutFormData>({
+		resolver: zodResolver(cashOutZodSchema),
+		defaultValues: {
+			phone: "",
+			amount: 100,
+		},
+	});
+
+	const onSubmit = async (data: CashOutFormData) => {
+		const toastId = toast.loading("Processing your request...");
+		if (!walletData?.data || walletData.data.balance < data.amount) {
+			toast.error("Insufficient balance", {
+				description: "You don't have enough balance for this cash out request.",
+				id: toastId,
+			});
+			return;
+		}
+
+		try {
+			const result = await cashOut({
+				phone: `+880${data.phone}`,
+				amount: data.amount,
+			}).unwrap();
+
+			if (result.success) {
+				toast.success("Cash out request submitted!", {
+					description: `Request for ${data.amount} BDT sent to agent +880${data.phone}.`,
+					id: toastId,
+				});
+			}
+			form.reset();
+		} catch (error: any) {
+			toast.error("Failed to process cash out", {
+				description:
+					error?.data?.message || "Something went wrong. Please try again.",
+				id: toastId,
+			});
+		}
+	};
+
+	if (walletLoading) {
+		return <CashOutSkeleton />;
+	}
+
+	if (!walletData?.data) {
+		return (
+			<div className="space-y-6">
+				<div>
+					<h1 className="text-3xl font-bold tracking-tight">Cash Out</h1>
+					<p className="text-muted-foreground">
+						Withdraw cash from your wallet
+					</p>
+				</div>
+				<Card>
+					<CardContent className="flex items-center justify-center py-12">
+						<div className="text-center space-y-2">
+							<p className="text-muted-foreground">No wallet found</p>
+							<p className="text-sm text-muted-foreground">
+								Please create a wallet first to cash out
+							</p>
+						</div>
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
+
+	const wallet = walletData.data;
+
+	return (
+		<div className="space-y-6">
+			{/* Header */}
+			<div>
+				<h1 className="text-3xl font-bold tracking-tight">Cash Out</h1>
+				<p className="text-muted-foreground">
+					Withdraw cash from your wallet through authorized agents
+				</p>
+			</div>
+
+			<div className="grid gap-6 lg:grid-cols-3">
+				{/* Cash Out Form */}
+				<Card className="lg:col-span-2">
+					<CardHeader>
+						<CardTitle>Cash Out Request</CardTitle>
+						<p className="text-sm text-muted-foreground">
+							Enter agent's phone number and amount to withdraw
+						</p>
+					</CardHeader>
+					<CardContent>
+						<Form {...form}>
+							<form
+								onSubmit={form.handleSubmit(onSubmit)}
+								className="space-y-6"
+							>
+								{/* Agent Phone Number Input */}
+								<FormField
+									control={form.control}
+									name="phone"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Agent's Phone Number</FormLabel>
+											<FormControl>
+												<PhoneInput {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* Amount Input */}
+								<FormField
+									control={form.control}
+									name="amount"
+									render={({ field }) => (
+										<FormItem>
+											<FormLabel>Cash Out Amount (BDT)</FormLabel>
+											<FormControl>
+												<Input
+													type="number"
+													placeholder="Enter amount to cash out"
+													{...field}
+													onChange={(e) =>
+														field.onChange(Number(e.target.value))
+													}
+													disabled={isSubmitting}
+												/>
+											</FormControl>
+											<p className="text-xs text-muted-foreground">
+												Minimum cash out amount: 100 BDT
+											</p>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+
+								{/* Submit Button */}
+								<Button
+									type="submit"
+									className="w-full"
+									disabled={isSubmitting}
+								>
+									{isSubmitting ? "Processing..." : `Request Cash Out`}
+								</Button>
+							</form>
+						</Form>
+					</CardContent>
+				</Card>
+
+				{/* Sidebar Cards */}
+				<div className="space-y-6">
+					{/* Wallet Balance Card */}
+					<Card>
+						<CardHeader>
+							<CardTitle>Your Wallet</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-4">
+							{/* Current Balance */}
+							<div className="space-y-1">
+								<p className="text-sm text-muted-foreground">
+									Available Balance
+								</p>
+								<p className="text-2xl font-bold">
+									{wallet.balance?.toLocaleString() || "0"}{" "}
+									<span className="text-sm font-medium text-muted-foreground">
+										{wallet.currency}
+									</span>
+								</p>
+							</div>
+
+							{/* Wallet Status */}
+							<div className="space-y-1">
+								<p className="text-sm text-muted-foreground">Status</p>
+								<span
+									className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${
+										wallet.status === "ACTIVE"
+											? "bg-green-100 text-green-800 border-green-200"
+											: "bg-gray-100 text-gray-800 border-gray-200"
+									}`}
+								>
+									{wallet.status}
+								</span>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Cash Out Instructions */}
+					<Card>
+						<CardHeader>
+							<CardTitle>📋 How it Works</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<ol className="text-xs text-muted-foreground space-y-2 list-decimal list-inside">
+								<li>Enter the authorized agent's phone number</li>
+								<li>Specify the amount you want to withdraw</li>
+								<li>Submit your cash out request</li>
+								<li>Visit the agent with your phone for verification</li>
+								<li>Receive cash after agent confirmation</li>
+							</ol>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
+		</div>
+	);
+}

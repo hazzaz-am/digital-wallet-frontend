@@ -136,7 +136,6 @@ export default function RegisterForm({
 								<FormItem>
 									<FormLabel>Phone</FormLabel>
 									<FormControl>
-										{/* <Input placeholder="+8801177718348" type="tel" {...field} /> */}
 										<PhoneInput {...field} />
 									</FormControl>
 									<FormDescription className="sr-only">

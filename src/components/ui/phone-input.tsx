@@ -7,7 +7,7 @@ export default function PhoneInput({...field}) {
   return (
     <div className="*:not-first:mt-2">
       <div className="flex rounded-md shadow-xs">
-        <span className="border-input bg-background text-muted-foreground -z-10 inline-flex items-center rounded-s-md border px-3 text-sm">
+        <span className="border-input bg-background text-muted-foreground inline-flex items-center rounded-s-md border px-3 text-sm">
           +880
         </span>
         <Input

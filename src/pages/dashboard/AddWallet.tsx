@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import AddWalletSkeleton from "./AddWalletSkeleton";
-import { Navigate } from "react-router";
+import { Navigate, useNavigate } from "react-router";
 
 // Wallet Status Enum (based on your model)
 export const WALLET_STATUS = {
@@ -46,6 +46,7 @@ const walletSchema = z.object({
 type WalletFormData = z.infer<typeof walletSchema>;
 
 export default function AddWallet() {
+	const navigate = useNavigate();
 	const { data: userInfo, isLoading } = useUserInfoQuery(undefined);
 	const [createNewWallet] = useCreateNewWalletMutation();
 	const { data: myWallet, isLoading: isMyWalletLoading } =
@@ -77,6 +78,7 @@ export default function AddWallet() {
 			if (res.success) {
 				toast.success("Wallet created successfully!", { id: toastId });
 				form.reset();
+				navigate(`/${userInfo?.data?.role.toLowerCase()}/wallets/me`);
 			}
 		} catch (error) {
 			console.error("Error creating wallet:", error);
@@ -103,7 +105,9 @@ export default function AddWallet() {
 	}
 
 	if (myWallet?.data?._id) {
-		return <Navigate to="/user/wallets/me" />;
+		return (
+			<Navigate to={`/${userInfo?.data?.role.toLowerCase()}/wallets/me`} />
+		);
 	}
 
 	return (

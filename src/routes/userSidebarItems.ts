@@ -4,10 +4,10 @@ const Analytics = lazy(() => import("@/pages/user/Analytics"));
 const Profile = lazy(() => import("@/pages/dashboard/Profile"));
 const AddMoney = lazy(() => import("@/pages/dashboard/AddMoney"));
 const AddWallet = lazy(() => import("@/pages/dashboard/AddWallet"));
-const CashOut = lazy(() => import("@/pages/user/CashOut"));
+const CashOut = lazy(() => import("@/pages/dashboard/CashOut"));
 const MyWallet = lazy(() => import("@/pages/dashboard/MyWallet"));
-const SendMoney = lazy(() => import("@/pages/user/SendMoney"));
-const Transactions = lazy(() => import("@/pages/user/Transactions"));
+const SendMoney = lazy(() => import("@/pages/dashboard/SendMoney"));
+const Transactions = lazy(() => import("@/pages/dashboard/Transactions"));
 
 export const userSidebarItems: ISidebarItem[] = [
 	{

@@ -6,7 +6,6 @@ import { Navigate } from "react-router";
 export const WithAuth = (Component: ComponentType, requiredRole?: TRole) => {
 	return function AuthWrapper() {
 		const { data, isLoading } = useUserInfoQuery(undefined);
-		console.log("FROM AUTH WRAPPER", data)
 
 		if (!isLoading && !data?.data) {
 			return <Navigate to="/login" replace={true} />;

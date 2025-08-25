@@ -32,3 +32,17 @@ export interface UserProfile {
 	role: "USER" | "AGENT" | "ADMIN";
 	agentData?: AgentData;
 }
+
+export interface Transaction {
+	_id: string;
+	amount: number;
+	createdAt: string;
+	fromWalletId: string;
+	initiatedBy: string;
+	initiatedByRole: string;
+	receiverId: string;
+	receiverRole: string;
+	toWalletId: string;
+	type: string;
+	updatedAt: string;
+}
