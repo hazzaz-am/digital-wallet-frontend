@@ -1,6 +1,6 @@
 import type { ISidebarItem } from "@/types";
 import { lazy } from "react";
-const Analytics = lazy(() => import("@/pages/user/Analytics"));
+const Analytics = lazy(() => import("@/pages/dashboard/Analytics"));
 const Profile = lazy(() => import("@/pages/dashboard/Profile"));
 const AddMoney = lazy(() => import("@/pages/dashboard/AddMoney"));
 const AddWallet = lazy(() => import("@/pages/dashboard/AddWallet"));
@@ -24,7 +24,7 @@ export const userSidebarItems: ISidebarItem[] = [
 		title: "Wallet",
 		items: [
 			{
-				title: "Create New Wallet",
+				title: "New Wallet",
 				url: "/user/wallets/new",
 				component: AddWallet,
 			},

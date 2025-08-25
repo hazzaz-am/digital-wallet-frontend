@@ -72,6 +72,8 @@ export default function LoginForm({
 					id: toastId,
 				});
 			}
+
+			toast.error("Login failed. Please try again.", { id: toastId });
 		}
 	};
 
