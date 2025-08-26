@@ -1,3 +1,4 @@
+import AllTransactions from "@/pages/admin/AllTransactions";
 import AllUsers from "@/pages/admin/AllUsers";
 import AllWallets from "@/pages/admin/AllWallets";
 import Analytics from "@/pages/dashboard/Analytics";
@@ -42,7 +43,7 @@ export const adminSidebarItems: ISidebarItem[] = [
 			{
 				title: "Transactions",
 				url: "/admin/transactions",
-				component: Transactions,
+				component: AllTransactions,
 			},
 		],
 	},

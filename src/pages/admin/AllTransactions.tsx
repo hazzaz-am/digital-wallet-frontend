@@ -16,7 +16,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import type { IWallet } from "@/types";
+import { useGetAllTransactionsQuery } from "@/store/features/transaction/transaction.api";
+import type { Transaction } from "@/types";
+import { getTransactionDirection } from "@/utils/getTransactionDirection";
+import { TRANSACTION_TYPES } from "@/constants/transactionsType";
 import { getTransactionTypeBadge } from "@/utils/getTransactionTypeBadge";
 import { formatDate } from "@/utils/formatDate";
 import { ArrowUpDown } from "lucide-react";
@@ -28,24 +31,21 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useGetWalletsQuery } from "@/store/features/wallet/wallet.api";
-import { WALLET_TYPES } from "@/constants/walletType";
 import { TransactionsSkeleton } from "../dashboard/TransactionsSkeleton";
-import { cn } from "@/lib/utils";
 
-export default function AllWallets() {
+export default function AllTransactions() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit, setLimit] = useState("10");
 	const [filterType, setFilterType] = useState<string>("ALL");
+	const [filterRole, setFilterRole] = useState<string>("ALL");
 	const [sort, setSort] = useState<string>("-createdAt");
-	const { data, isLoading, error } = useGetWalletsQuery({
+	const { data, isLoading, error } = useGetAllTransactionsQuery({
 		type: filterType === "ALL" ? undefined : filterType,
+		initiatedByRole: filterRole === "ALL" ? undefined : filterRole,
 		sort,
 		page: currentPage,
 		limit,
 	});
-
-	console.log("wallets data", data);
 
 	if (isLoading) {
 		return <TransactionsSkeleton />;
@@ -55,14 +55,14 @@ export default function AllWallets() {
 		return (
 			<div className="space-y-6">
 				<div>
-					<h1 className="text-3xl font-bold tracking-tight">Wallets</h1>
-					<p className="text-muted-foreground">All Wallets</p>
+					<h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
+					<p className="text-muted-foreground">Your transaction history</p>
 				</div>
 				<Card>
 					<CardContent className="flex items-center justify-center py-12">
 						<div className="text-center space-y-2">
 							<p className="text-muted-foreground">
-								Failed to load user wallets
+								Failed to load transactions
 							</p>
 							<p className="text-sm text-muted-foreground">
 								Please try refreshing the page
@@ -75,29 +75,45 @@ export default function AllWallets() {
 	}
 
 	const totalPage = data?.meta?.totalPage || 1;
+	console.log(data?.meta?.total);
 
 	return (
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Wallets</h1>
-				<p className="text-muted-foreground">View and manage wallets</p>
+				<h1 className="text-3xl font-bold tracking-tight">Transactions</h1>
+				<p className="text-muted-foreground">
+					View and manage your transaction history
+				</p>
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-				<div className="flex flex-col gap-2">
+			<div className="flex flex-col gap-4 justify-between items-start">
+				<div className="flex gap-6 text-center">
+					<div>
+						<div className="text-xl font-bold">
+							<div className="text-muted-foreground">
+								Total Transactions :{" "}
+								<span className="text-blue-500">{data?.meta?.total || 0}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="flex gap-2">
 					<div className="flex items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by type:
 						</label>
 						<Select value={filterType} onValueChange={setFilterType}>
 							<SelectTrigger className="w-48">
-								<SelectValue placeholder="Select wallet type" />
+								<SelectValue placeholder="Select transaction type" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="ALL">All Wallets</SelectItem>
-								<SelectItem value="USER">User</SelectItem>
-								<SelectItem value="AGENT">Agent</SelectItem>
+								<SelectItem value="ALL">All Transactions</SelectItem>
+								<SelectItem value="SEND_MONEY">Send Money</SelectItem>
+								<SelectItem value="TOP_UP">Top Up</SelectItem>
+								<SelectItem value="CASH_OUT">Cash Out</SelectItem>
+								<SelectItem value="CASH_IN">Cash In</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
@@ -119,21 +135,37 @@ export default function AllWallets() {
 							</SelectContent>
 						</Select>
 					</div>
+
+					<div className="flex items-center gap-2">
+						<label htmlFor="transactions-limit" className="text-sm font-medium">
+							Select Role:
+						</label>
+						<Select value={filterRole} onValueChange={setFilterRole}>
+							<SelectTrigger className="w-48">
+								<SelectValue placeholder="Select Role" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">All</SelectItem>
+								<SelectItem value="USER">User</SelectItem>
+								<SelectItem value="AGENT">Agent</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
 				</div>
 			</div>
 
-			{/* Wallets Table */}
+			{/* Transactions Table */}
 			<Card>
 				<CardHeader>
 					<div className="flex justify-between items-center">
 						<CardTitle>
-							Wallets
+							Transaction History
 							{filterType !== "ALL" && (
 								<span className="ml-2 text-sm font-normal text-muted-foreground">
 									({data?.data?.length}{" "}
 									{filterType !== undefined &&
 										filterType.replace("_", " ").toLowerCase()}{" "}
-									wallets)
+									transactions)
 								</span>
 							)}
 						</CardTitle>
@@ -157,23 +189,23 @@ export default function AllWallets() {
 						<div className="text-center py-12">
 							<div className="text-muted-foreground mb-2">
 								{filterType === "ALL"
-									? "No Wallets found"
+									? "No transactions found"
 									: `No ${
 											filterType !== undefined &&
 											filterType.replace("_", " ").toLowerCase()
-									  } wallets found`}
+									  } transactions found`}
 							</div>
 							<p className="text-sm text-muted-foreground">
 								{filterType === "ALL"
-									? "Wallets will appear here once you user/agent using their wallet"
-									: "Try selecting a different wallet type"}
+									? "Your transactions will appear here once you start using your wallet"
+									: "Try selecting a different transaction type"}
 							</p>
 						</div>
 					) : (
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead>Wallet Type</TableHead>
+									<TableHead>Transaction Type</TableHead>
 									<TableHead
 										title="sort by date"
 										onClick={() =>
@@ -190,73 +222,69 @@ export default function AllWallets() {
 										Date & Time
 										<ArrowUpDown size={12} />
 									</TableHead>
-									<TableHead>Wallet ID</TableHead>
+									<TableHead>Transaction ID</TableHead>
 									<TableHead
-										title="sort by balance"
+										title="sort by amount"
 										onClick={() =>
 											setSort((prev) =>
-												prev === "balance"
-													? "-balance"
-													: prev === "-balance"
-													? "balance"
-													: "-balance"
+												prev === "amount"
+													? "-amount"
+													: prev === "-amount"
+													? "amount"
+													: "amount"
 											)
 										}
 										className="text-right flex gap-2 items-center justify-end"
 									>
-										Balance
+										Amount
 										<ArrowUpDown size={12} />
 									</TableHead>
-									<TableHead className="text-right">Wallet Status</TableHead>
 									<TableHead className="text-right">Role</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{data?.data?.map((wallet: IWallet) => {
+								{data?.data?.map((transaction: Transaction) => {
+									const direction = getTransactionDirection(transaction.type);
+
 									return (
-										<TableRow key={wallet._id}>
+										<TableRow key={transaction._id}>
 											<TableCell>
 												<div className="flex items-center gap-2">
 													<span className="font-medium text-sm">
-														{WALLET_TYPES[
-															wallet.type as keyof typeof WALLET_TYPES
-														] || wallet.type}
+														{TRANSACTION_TYPES[
+															transaction.type as keyof typeof TRANSACTION_TYPES
+														] || transaction.type}
 													</span>
 													<span
 														className={`px-2 py-1 rounded-full text-xs font-medium border ${getTransactionTypeBadge(
-															wallet.type
+															transaction.type
 														)}`}
 													>
-														{wallet.type}
+														{transaction.type.replace("_", " ")}
 													</span>
 												</div>
 											</TableCell>
 											<TableCell>
 												<span className="text-sm">
-													{formatDate(wallet.createdAt)}
+													{formatDate(transaction.createdAt)}
 												</span>
 											</TableCell>
 											<TableCell>
 												<span className="font-mono text-xs text-muted-foreground">
-													{wallet._id.slice(-8)}
+													{transaction._id.slice(-8)}
 												</span>
 											</TableCell>
 											<TableCell className="text-right">
-												<div className={`text-sm font-bold`}>
-													{wallet.balance.toLocaleString()} BDT
+												<div
+													className={`text-sm font-bold ${direction.amountClass}`}
+												>
+													{direction.prefix}
+													{transaction.amount.toLocaleString()} BDT
 												</div>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className={cn("font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse",
-													wallet.status === "ACTIVE" && "bg-green-400/10 text-green-400 inset-ring-green-500/20",
-													wallet.status === "BLOCKED" && "bg-red-400/10 text-red-400 inset-ring-red-500/20"
-												)}>
-													{wallet.status}
-												</span>
-											</TableCell>
-											<TableCell className="text-right">
 												<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20 animate-pulse">
-													{wallet.type}
+													{transaction.initiatedByRole}
 												</span>
 											</TableCell>
 										</TableRow>
