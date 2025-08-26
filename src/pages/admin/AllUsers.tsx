@@ -253,7 +253,14 @@ export default function AllUsers() {
 															</span>
 														)}
 													</span>
-													<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20 animate-pulse">
+													<span
+														className={cn(
+															"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+															user.role === "ADMIN" && "bg-pink-400/10 text-pink-400 inset-ring-pink-500/20",
+															user.role === "AGENT" && "bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+															user.role === "USER" && "bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														)}
+													>
 														{user.role}
 													</span>
 												</div>
@@ -276,7 +283,7 @@ export default function AllUsers() {
 											<TableCell className="text-right">
 												<span
 													className={cn(
-														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse",
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
 														user.isDeleted
 															? "bg-red-400/10 text-red-400 inset-ring-red-400/20"
 															: " bg-green-400/10 text-green-400 inset-ring-green-500/20"
@@ -287,7 +294,7 @@ export default function AllUsers() {
 											</TableCell>
 											<TableCell className="text-right">
 												{["ADMIN", "USER"].includes(user.role) && (
-													<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20">
+													<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-green-400/10 text-green-400 inset-ring-green-500/20">
 														{"APPROVED"}
 													</span>
 												)}
@@ -298,7 +305,7 @@ export default function AllUsers() {
 																onClick={() =>
 																	handleWalletApproval("APPROVED", user._id)
 																}
-																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20 cursor-pointer"
+																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-green-400/10 text-green-400 inset-ring-green-500/20 cursor-pointer"
 															>
 																Approve
 															</span>
@@ -306,7 +313,7 @@ export default function AllUsers() {
 																onClick={() =>
 																	handleWalletApproval("REJECTED", user._id)
 																}
-																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-red-400/10 text-red-400 inset-ring-red-400/20 cursor-pointer"
+																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-red-400/10 text-red-400 inset-ring-red-400/20 cursor-pointer"
 															>
 																Reject
 															</span>
@@ -315,13 +322,13 @@ export default function AllUsers() {
 
 												{user.role === "AGENT" &&
 													user.agentData?.approvalStatus === "APPROVED" && (
-														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20">
+														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-green-400/10 text-green-400 inset-ring-green-500/20">
 															{"APPROVED"}
 														</span>
 													)}
 												{user.role === "AGENT" &&
 													user.agentData?.approvalStatus === "REJECTED" && (
-														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-red-400/10 text-red-400 inset-ring-red-400/20">
+														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-red-400/10 text-red-400 inset-ring-red-400/20">
 															{"REJECTED"}
 														</span>
 													)}

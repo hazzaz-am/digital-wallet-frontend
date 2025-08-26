@@ -247,15 +247,26 @@ export default function AllWallets() {
 												</div>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className={cn("font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse",
-													wallet.status === "ACTIVE" && "bg-green-400/10 text-green-400 inset-ring-green-500/20",
-													wallet.status === "BLOCKED" && "bg-red-400/10 text-red-400 inset-ring-red-500/20"
-												)}>
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														wallet.status === "ACTIVE" &&
+															"bg-green-400/10 text-green-400 inset-ring-green-500/20",
+														wallet.status === "BLOCKED" &&
+															"bg-red-400/10 text-red-400 inset-ring-red-500/20"
+													)}
+												>
 													{wallet.status}
 												</span>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20 animate-pulse">
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														wallet.type === "USER" && "bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														wallet.type === "AGENT" && "bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+													)}
+												>
 													{wallet.type}
 												</span>
 											</TableCell>
