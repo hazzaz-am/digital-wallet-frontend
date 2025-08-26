@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/table";
 import { useGetAllTransactionsQuery } from "@/store/features/transaction/transaction.api";
 import type { Transaction } from "@/types";
-import { getTransactionDirection } from "@/utils/getTransactionDirection";
 import { TRANSACTION_TYPES } from "@/constants/transactionsType";
 import { getTransactionTypeBadge } from "@/utils/getTransactionTypeBadge";
 import { formatDate } from "@/utils/formatDate";
@@ -32,16 +31,19 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import { TransactionsSkeleton } from "../dashboard/TransactionsSkeleton";
+import { cn } from "@/lib/utils";
 
 export default function AllTransactions() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit, setLimit] = useState("10");
 	const [filterType, setFilterType] = useState<string>("ALL");
-	const [filterRole, setFilterRole] = useState<string>("ALL");
+	const [initiatedByRole, setInitiatedByRole] = useState<string>("ALL");
+	const [receiverRole, setreceiverRole] = useState<string>("ALL");
 	const [sort, setSort] = useState<string>("-createdAt");
 	const { data, isLoading, error } = useGetAllTransactionsQuery({
 		type: filterType === "ALL" ? undefined : filterType,
-		initiatedByRole: filterRole === "ALL" ? undefined : filterRole,
+		initiatedByRole: initiatedByRole === "ALL" ? undefined : initiatedByRole,
+		receiverRole: receiverRole === "ALL" ? undefined : receiverRole,
 		sort,
 		page: currentPage,
 		limit,
@@ -99,7 +101,7 @@ export default function AllTransactions() {
 					</div>
 				</div>
 
-				<div className="flex gap-2">
+				<div className="flex gap-2 flex-wrap">
 					<div className="flex items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by type:
@@ -138,9 +140,25 @@ export default function AllTransactions() {
 
 					<div className="flex items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
-							Select Role:
+							Intiated by:
 						</label>
-						<Select value={filterRole} onValueChange={setFilterRole}>
+						<Select value={initiatedByRole} onValueChange={setInitiatedByRole}>
+							<SelectTrigger className="w-48">
+								<SelectValue placeholder="Select Role" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="ALL">All</SelectItem>
+								<SelectItem value="USER">User</SelectItem>
+								<SelectItem value="AGENT">Agent</SelectItem>
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="flex items-center gap-2">
+						<label htmlFor="transactions-limit" className="text-sm font-medium">
+							Recived by:
+						</label>
+						<Select value={receiverRole} onValueChange={setreceiverRole}>
 							<SelectTrigger className="w-48">
 								<SelectValue placeholder="Select Role" />
 							</SelectTrigger>
@@ -239,13 +257,12 @@ export default function AllTransactions() {
 										Amount
 										<ArrowUpDown size={12} />
 									</TableHead>
-									<TableHead className="text-right">Role</TableHead>
+									<TableHead className="text-right">Initiated By</TableHead>
+									<TableHead className="text-right">Receiver</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{data?.data?.map((transaction: Transaction) => {
-									const direction = getTransactionDirection(transaction.type);
-
 									return (
 										<TableRow key={transaction._id}>
 											<TableCell>
@@ -275,16 +292,38 @@ export default function AllTransactions() {
 												</span>
 											</TableCell>
 											<TableCell className="text-right">
-												<div
-													className={`text-sm font-bold ${direction.amountClass}`}
-												>
-													{direction.prefix}
+												<div className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-green-400/10 text-green-400 inset-ring-green-500/20">
 													{transaction.amount.toLocaleString()} BDT
 												</div>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20 animate-pulse">
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														transaction.initiatedByRole === "USER" &&
+															"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														transaction.initiatedByRole === "AGENT" &&
+															"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20"
+													)}
+												>
 													{transaction.initiatedByRole}
+												</span>
+											</TableCell>
+											<TableCell className="text-right">
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														transaction.receiverRole === "USER" &&
+															"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														transaction.receiverRole === "AGENT" &&
+															"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+														!transaction?.receiverRole &&
+															"bg-pink-400/10 text-pink-400 inset-ring-pink-500/20"
+													)}
+												>
+													{transaction.receiverRole
+														? transaction.receiverRole
+														: "N/A"}
 												</span>
 											</TableCell>
 										</TableRow>
