@@ -1,4 +1,3 @@
-import AgentRequests from "@/pages/admin/AgentRequests";
 import AllUsers from "@/pages/admin/AllUsers";
 import AllWallets from "@/pages/admin/AllWallets";
 import Analytics from "@/pages/dashboard/Analytics";
@@ -34,11 +33,6 @@ export const adminSidebarItems: ISidebarItem[] = [
 				title: "Accounts",
 				url: "/admin/all-accounts",
 				component: AllUsers,
-			},
-			{
-				title: "Agent Requests",
-				url: "/admin/agent-requests",
-				component: AgentRequests,
 			},
 		],
 	},

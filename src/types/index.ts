@@ -19,8 +19,8 @@ export interface ISidebarItem {
 }
 
 export interface AgentData {
-	commissionRate: number;
-	approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
+	commissionRate?: number;
+	approvalStatus?: "PENDING" | "APPROVED" | "REJECTED";
 }
 
 export interface UserProfile {

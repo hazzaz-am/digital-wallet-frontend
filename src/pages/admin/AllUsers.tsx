@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import type { UserProfile } from "@/types";
 import { formatDate } from "@/utils/formatDate";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Trash2 } from "lucide-react";
 import {
 	Pagination,
 	PaginationContent,
@@ -28,8 +28,12 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import { TransactionsSkeleton } from "../dashboard/TransactionsSkeleton";
-import { useGetAllUsersQuery } from "@/store/features/auth/auth.api";
+import {
+	useGetAllUsersQuery,
+	useUpdateUserInfoMutation,
+} from "@/store/features/auth/auth.api";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function AllUsers() {
 	const [currentPage, setCurrentPage] = useState(1);
@@ -42,6 +46,49 @@ export default function AllUsers() {
 		page: currentPage,
 		limit,
 	});
+	const [updateUserInfo] = useUpdateUserInfoMutation();
+
+	const handleDeleteUser = async (user: UserProfile, userId: string) => {
+		const toastId = toast.loading("Deleting user...");
+		if (user.role === "ADMIN") {
+			toast.error("You cannot delete an admin user", { id: toastId });
+			return;
+		}
+
+		if (user.isDeleted) {
+			toast.error("User is already deleted", { id: toastId });
+			return;
+		}
+		try {
+			const res = await updateUserInfo({
+				id: userId,
+				updatedData: { isDeleted: true },
+			}).unwrap();
+			if (res.success) {
+				toast.success("User deleted successfully", { id: toastId });
+			}
+		} catch (error) {
+			toast.error("Failed to delete user", { id: toastId });
+		}
+	};
+
+	const handleWalletApproval = async (
+		approvalStatus: "APPROVED" | "REJECTED",
+		userId: string
+	) => {
+		const toastId = toast.loading("Updating agent approval...");
+		try {
+			const res = await updateUserInfo({
+				id: userId,
+				updatedData: { agentData: { approvalStatus } },
+			}).unwrap();
+			if (res.success) {
+				toast.success("Agent approval completed successfully", { id: toastId });
+			}
+		} catch (error) {
+			toast.error("Failed to update agent", { id: toastId });
+		}
+	};
 
 	if (isLoading) {
 		return <TransactionsSkeleton />;
@@ -187,9 +234,10 @@ export default function AllUsers() {
 										<ArrowUpDown size={12} />
 									</TableHead>
 									<TableHead>Account ID</TableHead>
-									<TableHead>Phone</TableHead>
-									<TableHead className="text-right">Approval</TableHead>
-									<TableHead className="text-right">Role</TableHead>
+									<TableHead className="text-center">Phone</TableHead>
+									<TableHead className="text-right">Account Status</TableHead>
+									<TableHead className="text-right">Wallet Approval</TableHead>
+									<TableHead className="text-right">Delete</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -205,6 +253,9 @@ export default function AllUsers() {
 															</span>
 														)}
 													</span>
+													<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20 animate-pulse">
+														{user.role}
+													</span>
 												</div>
 											</TableCell>
 											<TableCell>
@@ -217,43 +268,71 @@ export default function AllUsers() {
 													{user._id.slice(-8)}
 												</span>
 											</TableCell>
-											<TableCell>
+											<TableCell className="text-center">
 												<span className="font-mono text-xs text-muted-foreground">
 													{user.phone}
 												</span>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className="text-xs text-muted-foreground">
-													<span
-														className={cn(
-															"h-2 w-2 rounded-full inline-block animate-pulse mr-2",
-															(user.role === "ADMIN" || user.role === "USER") &&
-																"bg-green-500",
-															user.role === "AGENT" &&
-																(user.agentData?.approvalStatus === "PENDING"
-																	? "bg-blue-500"
-																	: user.agentData?.approvalStatus ===
-																	  "REJECTED"
-																	? "bg-red-500"
-																	: "bg-green-500")
-														)}
-													></span>
-													{user.role === "ADMIN" || user.role === "USER"
-														? "Approved"
-														: user.role === "AGENT"
-														? user.agentData?.approvalStatus === "PENDING"
-															? "Pending"
-															: user.agentData?.approvalStatus === "REJECTED"
-															? "Rejected"
-															: "Approved"
-														: null}
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse",
+														user.isDeleted
+															? "bg-red-400/10 text-red-400 inset-ring-red-400/20"
+															: " bg-green-400/10 text-green-400 inset-ring-green-500/20"
+													)}
+												>
+													{user.isDeleted ? "Deleted" : "Active"}
 												</span>
 											</TableCell>
-
 											<TableCell className="text-right">
-												<span className="text-xs text-muted-foreground">
-													{user.role}
-												</span>
+												{["ADMIN", "USER"].includes(user.role) && (
+													<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20">
+														{"APPROVED"}
+													</span>
+												)}
+												{user.role === "AGENT" &&
+													user.agentData?.approvalStatus === "PENDING" && (
+														<div className="flex items-center justify-end gap-2">
+															<span
+																onClick={() =>
+																	handleWalletApproval("APPROVED", user._id)
+																}
+																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20 cursor-pointer"
+															>
+																Approve
+															</span>
+															<span
+																onClick={() =>
+																	handleWalletApproval("REJECTED", user._id)
+																}
+																className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-red-400/10 text-red-400 inset-ring-red-400/20 cursor-pointer"
+															>
+																Reject
+															</span>
+														</div>
+													)}
+
+												{user.role === "AGENT" &&
+													user.agentData?.approvalStatus === "APPROVED" && (
+														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-green-400/10 text-green-400 inset-ring-green-500/20">
+															{"APPROVED"}
+														</span>
+													)}
+												{user.role === "AGENT" &&
+													user.agentData?.approvalStatus === "REJECTED" && (
+														<span className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring animate-pulse bg-red-400/10 text-red-400 inset-ring-red-400/20">
+															{"REJECTED"}
+														</span>
+													)}
+											</TableCell>
+											<TableCell className="text-right">
+												<Button
+													onClick={() => handleDeleteUser(user, user._id)}
+													variant={"outline"}
+												>
+													<Trash2 color="red" height={14} width={14} />
+												</Button>
 											</TableCell>
 										</TableRow>
 									);
