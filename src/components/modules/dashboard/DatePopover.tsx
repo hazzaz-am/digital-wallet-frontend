@@ -22,7 +22,7 @@ export function DatePopover({ label, date, setDate }: IProps) {
 	const [open, setOpen] = React.useState(false);
 
 	return (
-		<div className="flex gap-3">
+		<div className="flex flex-col sm:flex-row gap-3">
 			<Label htmlFor="date" className="px-1">
 				{label}
 			</Label>

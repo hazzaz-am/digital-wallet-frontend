@@ -1,8 +1,8 @@
 export const getStatusBadge = (status: string) => {
 	const styles = {
-		PENDING: "bg-yellow-100 text-yellow-800 border-yellow-200",
-		APPROVED: "bg-green-100 text-green-800 border-green-200",
-		REJECTED: "bg-red-100 text-red-800 border-red-200",
+		PENDING:  "bg-blue-400/10 text-blue-400 inset-ring-blue-500/20",
+		APPROVED: "bg-green-400/10 text-green-400 inset-ring-green-500/20",
+		REJECTED: "bg-red-400/10 text-red-400 inset-ring-red-500/20",
 	};
 	return styles[status as keyof typeof styles] || styles.PENDING;
 };

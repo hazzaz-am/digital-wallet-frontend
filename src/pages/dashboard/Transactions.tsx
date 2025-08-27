@@ -99,6 +99,7 @@ export default function Transactions() {
 
 			<div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
 				<div className="flex flex-wrap gap-2">
+					
 					<div className="flex items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by type:

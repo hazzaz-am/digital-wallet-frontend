@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import type { UserProfile } from "@/types";
 import { formatDate } from "@/utils/formatDate";
-import { ArrowUpDown, Trash2 } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import {
 	Pagination,
 	PaginationContent,
@@ -34,41 +34,51 @@ import {
 } from "@/store/features/auth/auth.api";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { DatePopover } from "@/components/modules/dashboard/DatePopover";
+import IndividualAccountPopover from "./IndividualAccountPopover";
+import { Input } from "@/components/ui/input";
 
 export default function AllUsers() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit, setLimit] = useState("10");
 	const [filterType, setFilterType] = useState<string>("ALL");
+	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 	const [sort, setSort] = useState<string>("-createdAt");
+	const [searchTerm, setSearchTerm] = useState<string>("");
+
 	const { data, isLoading, error } = useGetAllUsersQuery({
 		role: filterType === "ALL" ? undefined : filterType,
+		startDate: startDate === undefined ? undefined : startDate.toISOString(),
+		endDate: endDate === undefined ? undefined : endDate.toISOString(),
+		searchTerm,
 		sort,
 		page: currentPage,
 		limit,
 	});
 	const [updateUserInfo] = useUpdateUserInfoMutation();
 
+	console.log(data);
+
 	const handleDeleteUser = async (user: UserProfile, userId: string) => {
-		const toastId = toast.loading("Deleting user...");
+		const toastId = toast.loading("Updating user...");
 		if (user.role === "ADMIN") {
-			toast.error("You cannot delete an admin user", { id: toastId });
+			toast.error("You cannot update an admin", { id: toastId });
 			return;
 		}
 
-		if (user.isDeleted) {
-			toast.error("User is already deleted", { id: toastId });
-			return;
-		}
 		try {
 			const res = await updateUserInfo({
 				id: userId,
-				updatedData: { isDeleted: true },
+				updatedData: { isDeleted: !user.isDeleted },
 			}).unwrap();
 			if (res.success) {
-				toast.success("User deleted successfully", { id: toastId });
+				toast.success("User account status updated successfully", {
+					id: toastId,
+				});
 			}
 		} catch (error) {
-			toast.error("Failed to delete user", { id: toastId });
+			toast.error("Failed to update user account status", { id: toastId });
 		}
 	};
 
@@ -123,13 +133,13 @@ export default function AllUsers() {
 		<div className="space-y-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-3xl font-bold tracking-tight">Users</h1>
-				<p className="text-muted-foreground">View and manage users</p>
+				<h1 className="text-3xl font-bold tracking-tight">Accounts</h1>
+				<p className="text-muted-foreground">View and manage user accounts</p>
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2">
+			<div className="flex flex-col gap-4 justify-between items-start ">
+				<div className="flex flex-wrap gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by role:
 						</label>
@@ -139,13 +149,14 @@ export default function AllUsers() {
 							</SelectTrigger>
 							<SelectContent>
 								<SelectItem value="ALL">All Users</SelectItem>
+								<SelectItem value="ADMIN">Admin</SelectItem>
 								<SelectItem value="USER">User</SelectItem>
 								<SelectItem value="AGENT">Agent</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
 							Set Limit:
 						</label>
@@ -162,6 +173,28 @@ export default function AllUsers() {
 							</SelectContent>
 						</Select>
 					</div>
+
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<DatePopover
+							label="Start Date"
+							date={startDate}
+							setDate={setStartDate}
+						/>
+						<DatePopover label="End Date" date={endDate} setDate={setEndDate} />
+					</div>
+				</div>
+
+				<div className="flex flex-wrap gap-2 ">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<label htmlFor="transaction-filter" className="text-sm font-medium w-48">
+							Search Accounts:
+						</label>
+						<Input
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							placeholder="Search by name, phone or number"
+						/>
+					</div>
 				</div>
 			</div>
 
@@ -170,13 +203,13 @@ export default function AllUsers() {
 				<CardHeader>
 					<div className="flex justify-between items-center">
 						<CardTitle>
-							Users
+							Accounts
 							{filterType !== "ALL" && (
 								<span className="ml-2 text-sm font-normal text-muted-foreground">
 									({data?.data?.length}{" "}
 									{filterType !== undefined &&
 										filterType.replace("_", " ").toLowerCase()}{" "}
-									users)
+									accounts)
 								</span>
 							)}
 						</CardTitle>
@@ -187,8 +220,17 @@ export default function AllUsers() {
 								onClick={() => {
 									setFilterType("ALL");
 									setLimit("");
+									setStartDate(undefined);
+									setEndDate(undefined);
 								}}
-								className={filterType === "ALL" ? "hidden" : ""}
+								className={
+									filterType === "ALL" &&
+									limit === "" &&
+									startDate === undefined &&
+									endDate === undefined
+										? "hidden"
+										: ""
+								}
 							>
 								Clear Filter
 							</Button>
@@ -237,6 +279,7 @@ export default function AllUsers() {
 									<TableHead className="text-center">Phone</TableHead>
 									<TableHead className="text-right">Account Status</TableHead>
 									<TableHead className="text-right">Wallet Approval</TableHead>
+									<TableHead className="text-right">View</TableHead>
 									<TableHead className="text-right">Delete</TableHead>
 								</TableRow>
 							</TableHeader>
@@ -256,9 +299,12 @@ export default function AllUsers() {
 													<span
 														className={cn(
 															"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
-															user.role === "ADMIN" && "bg-pink-400/10 text-pink-400 inset-ring-pink-500/20",
-															user.role === "AGENT" && "bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
-															user.role === "USER" && "bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+															user.role === "ADMIN" &&
+																"bg-pink-400/10 text-pink-400 inset-ring-pink-500/20",
+															user.role === "AGENT" &&
+																"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+															user.role === "USER" &&
+																"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20"
 														)}
 													>
 														{user.role}
@@ -334,12 +380,20 @@ export default function AllUsers() {
 													)}
 											</TableCell>
 											<TableCell className="text-right">
-												<Button
+												<IndividualAccountPopover userId={user._id} />
+											</TableCell>
+											<TableCell className="text-right">
+												<span
 													onClick={() => handleDeleteUser(user, user._id)}
-													variant={"outline"}
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring cursor-pointer",
+														user.isDeleted
+															? "bg-green-400/10 text-green-400 inset-ring-green-500/20"
+															: "bg-red-400/10 text-red-400 inset-ring-red-400/20"
+													)}
 												>
-													<Trash2 color="red" height={14} width={14} />
-												</Button>
+													{user.isDeleted ? "Activate" : "Delete"}
+												</span>
 											</TableCell>
 										</TableRow>
 									);
