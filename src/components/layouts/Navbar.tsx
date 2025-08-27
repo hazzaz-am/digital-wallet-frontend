@@ -19,7 +19,6 @@ import { Link, NavLink } from "react-router";
 import { ModeToggle } from "../ui/mode-toggle";
 import UserMenu from "../user-menu";
 import NavbarSkeleton from "./NavbarSkeleton";
-import { toast } from "sonner";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -33,7 +32,7 @@ const navigationLinks = [
 
 export default function Navbar() {
 	const [isScrolled, setIsScrolled] = useState(false);
-	const { data: userInfo, isLoading, error } = useUserInfoQuery(undefined);
+	const { data: userInfo, isLoading } = useUserInfoQuery(undefined);
 
 	useEffect(() => {
 		const handleScroll = () => {
