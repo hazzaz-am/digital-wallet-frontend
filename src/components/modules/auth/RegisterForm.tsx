@@ -100,7 +100,6 @@ export default function RegisterForm({
 				navigate("/login");
 			}
 		} catch (error: any) {
-			console.error(error.data.message);
 			if (error?.data?.message === "Make sure to provide valid input") {
 				toast.error("Invalid input. Please check your data.", { id: toastId });
 			} else if (

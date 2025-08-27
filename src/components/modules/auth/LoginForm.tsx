@@ -60,7 +60,6 @@ export default function LoginForm({
 				toast.success("Logged in successfully", { id: toastId });
 			}
 		} catch (err: any) {
-			console.error(err);
 
 			if (err.data.message === "Password is incorrect") {
 				toast.error("Password is incorrect", { id: toastId });

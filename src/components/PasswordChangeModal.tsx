@@ -92,7 +92,6 @@ export function PasswordChangeModal() {
 				navigate("/login");
 			}
 		} catch (error: any) {
-			console.error(error);
 			toast.error(error.data.message || "Failed to change password", {
 				id: toastId,
 			});

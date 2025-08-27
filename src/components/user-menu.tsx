@@ -34,7 +34,7 @@ export default function UserMenu({
 	const resetWebsiteTour = () => {
 		localStorage.removeItem("nav-tour");
 		window.location.pathname = "/";
-	}
+	};
 
 	return (
 		<DropdownMenu>
@@ -65,16 +65,20 @@ export default function UserMenu({
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
-					<LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
-					<Link to="/" className="cursor-pointer" onClick={handleLogOut}>
-						Logout
+					<RotateCcw size={16} className="opacity-60" aria-hidden="true" />
+					<Link to={"/"} onClick={resetWebsiteTour} className="cursor-pointer">
+						Reset Tour
 					</Link>
 				</DropdownMenuItem>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem>
-					<Button variant={"outline"} onClick={resetWebsiteTour} className="cursor-pointer">
-					<RotateCcw size={16} className="opacity-60" aria-hidden="true" />
-						Reset Tour
+					<Button
+						variant="outline"
+						className="cursor-pointer"
+						onClick={handleLogOut}
+					>
+						<LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
+						<Link to="/">Logout</Link>
 					</Button>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
