@@ -274,6 +274,7 @@ export default function AllWallets() {
 									</TableHead>
 									<TableHead className="text-right">Wallet Status</TableHead>
 									<TableHead className="text-right">Role</TableHead>
+									<TableHead className="text-right">Wallet Approval</TableHead>
 									<TableHead className="text-right">Action</TableHead>
 								</TableRow>
 							</TableHeader>

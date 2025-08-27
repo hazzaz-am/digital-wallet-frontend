@@ -59,3 +59,21 @@ export interface IWallet {
 	balance: number;
 	status: string;
 }
+
+export interface AnalyticsData {
+	overall: Array<{
+		_id: null;
+		totalTransactions: number;
+		totalAmount: number;
+	}>;
+	monthlyTypes: Array<{
+		_id: string;
+		count: number;
+		totalAmount: number;
+	}>;
+	yearly: Array<{
+		_id: number;
+		count: number;
+		totalAmount: number;
+	}>;
+}

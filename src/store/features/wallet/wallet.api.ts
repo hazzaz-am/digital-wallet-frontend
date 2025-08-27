@@ -1,6 +1,6 @@
 import { baseApi } from "@/store/baseApi";
 
-export const authApi = baseApi.injectEndpoints({
+export const walletApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		createNewWallet: builder.mutation({
 			query: (walletData) => ({
@@ -14,6 +14,13 @@ export const authApi = baseApi.injectEndpoints({
 				method: "PATCH",
 				url: `/wallet/update/${id}`,
 				data: walletData,
+			}),
+			invalidatesTags: ["WALLET"],
+		}),
+		deleteWallet: builder.mutation({
+			query: (id) => ({
+				method: "DELETE",
+				url: `/wallet/${id}`,
 			}),
 			invalidatesTags: ["WALLET"],
 		}),
@@ -75,5 +82,6 @@ export const {
 	useCashInMutation,
 	useCashOutMutation,
 	useGetWalletsQuery,
-	useUpdateWalletMutation
-} = authApi;
+	useUpdateWalletMutation,
+	useDeleteWalletMutation
+} = walletApi;

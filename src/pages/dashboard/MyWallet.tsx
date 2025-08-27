@@ -1,6 +1,24 @@
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMyWalletQuery } from "@/store/features/wallet/wallet.api";
+import {
+	useDeleteWalletMutation,
+	useMyWalletQuery,
+} from "@/store/features/wallet/wallet.api";
+import { AlertTriangle, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { MyWalletSkeleton } from "./MyWalletSkeleton";
+import { useNavigate } from "react-router";
 
 // Wallet Status Enum (based on your model)
 export const WALLET_STATUS = {
@@ -32,9 +50,28 @@ const getRoleTypeBadge = (type: string) => {
 	return styles[type as keyof typeof styles] || styles.USER;
 };
 
-
 export default function MyWallet() {
 	const { data: walletData, isLoading, error } = useMyWalletQuery(undefined);
+	const [deleteWallet, { isLoading: isDeleting }] = useDeleteWalletMutation();
+	const navigate = useNavigate();
+
+	const handleDeleteWallet = async () => {
+		if (!walletData?.data?._id) return;
+		const toastId = toast.loading("Deleting your wallet...");
+
+		try {
+			const res = await deleteWallet(walletData.data._id).unwrap();
+			if (res.success) {
+				toast.success("Wallet deleted successfully!", { id: toastId });
+				navigate("/agent/wallets/new");
+			}
+		} catch (error) {
+			toast.error("Failed to delete wallet. Please try again.", {
+				id: toastId,
+			});
+			console.error("Delete wallet error:", error);
+		}
+	};
 
 	if (isLoading) {
 		return <MyWalletSkeleton />;
@@ -51,7 +88,7 @@ export default function MyWallet() {
 					<CardContent className="flex items-center justify-center py-12">
 						<div className="text-center space-y-2">
 							<p className="text-muted-foreground">
-								Failed to load wallet data
+								Failed to load wallet data or you don't have a wallet yet.
 							</p>
 							<p className="text-sm text-muted-foreground">
 								Please try refreshing the page
@@ -127,6 +164,70 @@ export default function MyWallet() {
 								<p className="text-xs font-mono bg-muted px-2 py-1 rounded">
 									{wallet._id || "N/A"}
 								</p>
+							</div>
+						</div>
+
+						{/* Delete Wallet Section */}
+						<div className="pt-4 border-t">
+							<div className="flex items-center justify-between">
+								<div className="space-y-1">
+									<p className="text-sm font-medium text-muted-foreground">
+										Danger Zone
+									</p>
+									<p className="text-xs text-muted-foreground">
+										Permanently delete this wallet and all associated data
+									</p>
+								</div>
+								<AlertDialog>
+									<AlertDialogTrigger asChild>
+										<Button
+											size="sm"
+											disabled={isDeleting}
+											className="bg-red-600 hover:bg-red-700 ml-4"
+										>
+											<Trash2 className="h-4 w-4 mr-2" />
+											{isDeleting ? "Deleting..." : "Delete Wallet"}
+										</Button>
+									</AlertDialogTrigger>
+									<AlertDialogContent>
+										<AlertDialogHeader>
+											<AlertDialogTitle className="flex items-center gap-2">
+												<AlertTriangle className="h-5 w-5 text-red-500" />
+												Delete Wallet Confirmation
+											</AlertDialogTitle>
+											<AlertDialogDescription className="space-y-2">
+												<p>
+													Are you sure you want to delete this wallet? This
+													action cannot be undone.
+												</p>
+												<div className="bg-red-50 border border-red-200 rounded-md p-3">
+													<p className="text-sm text-red-800 font-medium">
+														⚠️ Warning: This will permanently delete:
+													</p>
+													<ul className="text-sm text-red-700 mt-2 ml-4 list-disc">
+														<li>
+															Your wallet balance:{" "}
+															{wallet.balance?.toLocaleString()}{" "}
+															{wallet.currency}
+														</li>
+														<li>All transaction history</li>
+														<li>Wallet access and permissions</li>
+													</ul>
+												</div>
+											</AlertDialogDescription>
+										</AlertDialogHeader>
+										<AlertDialogFooter>
+											<AlertDialogCancel>Cancel</AlertDialogCancel>
+											<AlertDialogAction
+												onClick={handleDeleteWallet}
+												className="bg-red-600 hover:bg-red-700"
+												disabled={isDeleting}
+											>
+												{isDeleting ? "Deleting..." : "Yes, Delete Wallet"}
+											</AlertDialogAction>
+										</AlertDialogFooter>
+									</AlertDialogContent>
+								</AlertDialog>
 							</div>
 						</div>
 					</CardContent>
