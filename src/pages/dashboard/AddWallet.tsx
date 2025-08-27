@@ -72,7 +72,6 @@ export default function AddWallet() {
 				balance: data.balance,
 			};
 
-			console.log("Creating wallet:", walletData);
 			const res = await createNewWallet(walletData).unwrap();
 
 			if (res.success) {
@@ -80,9 +79,8 @@ export default function AddWallet() {
 				form.reset();
 				navigate(`/${userInfo?.data?.role.toLowerCase()}/wallets/me`);
 			}
-		} catch (error) {
-			console.error("Error creating wallet:", error);
-			toast.error("Failed to create wallet. Please try again.", {
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to create wallet. Please try again.", {
 				id: toastId,
 			});
 		}

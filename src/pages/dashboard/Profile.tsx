@@ -74,15 +74,13 @@ export default function Profile() {
 		};
 		const toastId = toast.loading("Saving profile...");
 		try {
-			console.log("Saving profile data:", editedData);
 			const res = await updateProfile(newData).unwrap();
 			if (res.success) {
 				toast.success("Profile updated successfully", { id: toastId });
 			}
 			setIsEditing(false);
-		} catch (error) {
-			console.log(error);
-			toast.error("Failed to update profile", { id: toastId });
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to update profile", { id: toastId });
 		}
 	};
 

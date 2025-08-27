@@ -65,11 +65,10 @@ export default function MyWallet() {
 				toast.success("Wallet deleted successfully!", { id: toastId });
 				navigate("/agent/wallets/new");
 			}
-		} catch (error) {
-			toast.error("Failed to delete wallet. Please try again.", {
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to delete wallet. Please try again.", {
 				id: toastId,
 			});
-			console.error("Delete wallet error:", error);
 		}
 	};
 

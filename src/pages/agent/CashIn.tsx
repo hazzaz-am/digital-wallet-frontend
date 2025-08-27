@@ -92,7 +92,7 @@ export default function CashIn() {
 			}
 			form.reset();
 		} catch (error: any) {
-			toast.error("Failed to process cash in", {
+			toast.error(error?.data?.message || "Failed to process cash in", {
 				description:
 					error?.data?.message || "Something went wrong. Please try again.",
 				id: toastId,

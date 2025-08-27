@@ -71,8 +71,8 @@ export default function AllWallets() {
 			if (res.success) {
 				toast.success("Wallet status updated successfully", { id: toastId });
 			}
-		} catch (error) {
-			toast.error("Failed to update wallet", { id: toastId });
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to update wallet", { id: toastId });
 		}
 	};
 

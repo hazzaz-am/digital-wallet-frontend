@@ -85,7 +85,6 @@ export default function AllTransactions() {
 	}
 
 	const totalPage = data?.meta?.totalPage || 1;
-	console.log(data?.meta?.total);
 
 	return (
 		<div className="space-y-6">

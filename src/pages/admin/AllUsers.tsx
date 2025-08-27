@@ -58,7 +58,6 @@ export default function AllUsers() {
 	});
 	const [updateUserInfo] = useUpdateUserInfoMutation();
 
-	console.log(data);
 
 	const handleDeleteUser = async (user: UserProfile, userId: string) => {
 		const toastId = toast.loading("Updating user...");
@@ -77,8 +76,8 @@ export default function AllUsers() {
 					id: toastId,
 				});
 			}
-		} catch (error) {
-			toast.error("Failed to update user account status", { id: toastId });
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to update user account status", { id: toastId });
 		}
 	};
 
@@ -95,8 +94,8 @@ export default function AllUsers() {
 			if (res.success) {
 				toast.success("Agent approval completed successfully", { id: toastId });
 			}
-		} catch (error) {
-			toast.error("Failed to update agent", { id: toastId });
+		} catch (error: any) {
+			toast.error(error?.data?.message || "Failed to update agent", { id: toastId });
 		}
 	};
 

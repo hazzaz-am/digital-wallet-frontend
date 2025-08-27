@@ -141,7 +141,6 @@ export default function SendMoney() {
 
 			form.reset();
 		} catch (error: any) {
-			console.log(error);
 			toast.error("Failed to send money", {
 				description:
 					error?.data?.message || "Something went wrong. Please try again.",

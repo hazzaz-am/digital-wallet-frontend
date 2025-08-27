@@ -82,7 +82,6 @@ export function PasswordChangeModal() {
 			oldPassword: data.oldPassword,
 			newPassword: data.newPassword,
 		};
-		console.log(passInfo);
 		try {
 			const result = await changePassword(passInfo).unwrap();
 

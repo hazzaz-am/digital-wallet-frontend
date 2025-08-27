@@ -45,7 +45,6 @@ export default function LoginForm({
 			password: "",
 		},
 	});
-	// const [login] = useLoginMutation();
 
 	const onSubmit = async (data: z.infer<typeof loginFormSchema>) => {
 		const toastId = toast.loading("Logging in...");
@@ -53,27 +52,27 @@ export default function LoginForm({
 			phone: `+880${data.phone}`,
 			password: data.password,
 		};
-		console.log(userInfo);
 		try {
 			const res = await loginUser(userInfo).unwrap();
 			if (res.success) {
+				const account = res.data.user.role.toLowerCase();
+				navigate(`/${account}/me`);
 				toast.success("Logged in successfully", { id: toastId });
-				navigate("/");
 			}
 		} catch (err: any) {
 			console.error(err);
 
 			if (err.data.message === "Password is incorrect") {
 				toast.error("Password is incorrect", { id: toastId });
-			}
-
-			if (err.data.message === "User not found") {
+			} else if (err.data.message === "User not found") {
 				toast.error("Account does not exist with this phone number", {
 					id: toastId,
 				});
+			} else {
+				toast.error(err?.data?.message || "Login failed. Please try again.", {
+					id: toastId,
+				});
 			}
-
-			toast.error("Login failed. Please try again.", { id: toastId });
 		}
 	};
 

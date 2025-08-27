@@ -92,7 +92,6 @@ export default function RegisterForm({
 			phone: `+880${data.phone}`,
 			password: data.password,
 		};
-		console.log(userInfo);
 		try {
 			const result = await userRegistration(userInfo).unwrap();
 
@@ -113,6 +112,8 @@ export default function RegisterForm({
 						id: toastId,
 					}
 				);
+			} else {
+				toast.error(error?.data?.message || "Registration failed, please try again later.", { id: toastId });
 			}
 		}
 	};

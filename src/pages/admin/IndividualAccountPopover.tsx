@@ -21,7 +21,6 @@ export default function IndividualAccountPopover({
 	userId: string;
 }) {
 	const { data: user, isLoading } = useGetUserByIdQuery(userId);
-	console.log(user);
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
