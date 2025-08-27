@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BD_PHONE_REGEX } from "@/constants/phoneNumber";
 import { ProfileSkeleton } from "@/pages/dashboard/ProfileSkeleton";
 import {
 	useUpdateUserInfoMutation,
@@ -43,15 +44,28 @@ export default function Profile() {
 		setIsEditing(true);
 		setEditedData({
 			name: user.name || "",
+			phone: user.phone,
 		});
 	};
 
 	const handleSave = async () => {
-		if (user.name === editedData.name) {
+		if (user.name === editedData.name && user.phone === editedData.phone) {
 			toast.info("No changes made to save");
 			setIsEditing(false);
 			return;
 		}
+
+		if (editedData.phone) {
+			if (!BD_PHONE_REGEX.test(editedData.phone)) {
+				toast.error("Invalid BD phone number", {
+					description:
+						"Phone number must start with +880 followed by 10 digits.",
+				});
+				setIsEditing(false);
+				return;
+			}
+		}
+
 		const newData = {
 			id: user._id,
 			updatedData: {
@@ -112,7 +126,7 @@ export default function Profile() {
 							>
 								{user.role}
 							</span>
-							{user.agentData && user.role === "AGENT" && (
+							{user?.agentData?.approvalStatus && user.role === "AGENT" && (
 								<span
 									className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusBadge(
 										user.agentData.approvalStatus
@@ -163,9 +177,20 @@ export default function Profile() {
 
 							<div className="space-y-2">
 								<Label htmlFor="phone">Phone Number</Label>
-								<div className="p-3 bg-muted/30 rounded-md text-sm">
-									{user.phone}
-								</div>
+								{isEditing ? (
+									<Input
+										id="phone"
+										value={editedData.phone}
+										onChange={(e) =>
+											setEditedData({ ...editedData, phone: e.target.value })
+										}
+										placeholder="Enter your phone number"
+									/>
+								) : (
+									<div className="p-3 bg-muted/30 rounded-md text-sm">
+										{user.phone}
+									</div>
+								)}
 							</div>
 
 							<div className="space-y-2">
@@ -251,18 +276,20 @@ export default function Profile() {
 									</span>
 								</div>
 
-								<div className="flex items-center justify-between">
-									<span className="text-sm text-muted-foreground">
-										Approval Status
-									</span>
-									<span
-										className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusBadge(
-											user.agentData.approvalStatus
-										)}`}
-									>
-										{user.agentData.approvalStatus}
-									</span>
-								</div>
+								{user.agentData.approvalStatus && (
+									<div className="flex items-center justify-between">
+										<span className="text-sm text-muted-foreground">
+											Approval Status
+										</span>
+										<span
+											className={`px-3 py-1 text-xs font-medium rounded-full border ${getStatusBadge(
+												user.agentData.approvalStatus
+											)}`}
+										>
+											{user.agentData.approvalStatus}
+										</span>
+									</div>
+								)}
 
 								{user.agentData.approvalStatus === "PENDING" && (
 									<div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
