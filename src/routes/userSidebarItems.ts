@@ -1,13 +1,12 @@
+import AddMoney from "@/pages/dashboard/AddMoney";
+import AddWallet from "@/pages/dashboard/AddWallet";
+import Analytics from "@/pages/dashboard/Analytics";
+import CashOut from "@/pages/dashboard/CashOut";
+import MyWallet from "@/pages/dashboard/MyWallet";
+import Profile from "@/pages/dashboard/Profile";
+import SendMoney from "@/pages/dashboard/SendMoney";
+import Transactions from "@/pages/dashboard/Transactions";
 import type { ISidebarItem } from "@/types";
-import { lazy } from "react";
-const Analytics = lazy(() => import("@/pages/dashboard/Analytics"));
-const Profile = lazy(() => import("@/pages/dashboard/Profile"));
-const AddMoney = lazy(() => import("@/pages/dashboard/AddMoney"));
-const AddWallet = lazy(() => import("@/pages/dashboard/AddWallet"));
-const CashOut = lazy(() => import("@/pages/dashboard/CashOut"));
-const MyWallet = lazy(() => import("@/pages/dashboard/MyWallet"));
-const SendMoney = lazy(() => import("@/pages/dashboard/SendMoney"));
-const Transactions = lazy(() => import("@/pages/dashboard/Transactions"));
 
 export const userSidebarItems: ISidebarItem[] = [
 	{

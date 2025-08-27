@@ -9,6 +9,14 @@ export const authApi = baseApi.injectEndpoints({
 				data: walletData,
 			}),
 		}),
+		updateWallet: builder.mutation({
+			query: ({ id, walletData }) => ({
+				method: "PATCH",
+				url: `/wallet/update/${id}`,
+				data: walletData,
+			}),
+			invalidatesTags: ["WALLET"],
+		}),
 		myWallet: builder.query({
 			query: () => ({
 				method: "GET",
@@ -67,4 +75,5 @@ export const {
 	useCashInMutation,
 	useCashOutMutation,
 	useGetWalletsQuery,
+	useUpdateWalletMutation
 } = authApi;

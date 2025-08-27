@@ -383,7 +383,8 @@ export default function AllUsers() {
 												<IndividualAccountPopover userId={user._id} />
 											</TableCell>
 											<TableCell className="text-right">
-												<span
+												<Button
+													variant={"outline"}
 													onClick={() => handleDeleteUser(user, user._id)}
 													className={cn(
 														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring cursor-pointer",
@@ -393,7 +394,7 @@ export default function AllUsers() {
 													)}
 												>
 													{user.isDeleted ? "Activate" : "Delete"}
-												</span>
+												</Button>
 											</TableCell>
 										</TableRow>
 									);

@@ -17,7 +17,6 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import type { IWallet } from "@/types";
-import { getTransactionTypeBadge } from "@/utils/getTransactionTypeBadge";
 import { formatDate } from "@/utils/formatDate";
 import { ArrowUpDown } from "lucide-react";
 import {
@@ -28,24 +27,54 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useGetWalletsQuery } from "@/store/features/wallet/wallet.api";
+import {
+	useGetWalletsQuery,
+	useUpdateWalletMutation,
+} from "@/store/features/wallet/wallet.api";
 import { WALLET_TYPES } from "@/constants/walletType";
 import { TransactionsSkeleton } from "../dashboard/TransactionsSkeleton";
 import { cn } from "@/lib/utils";
+import { DatePopover } from "@/components/modules/dashboard/DatePopover";
+import { Input } from "@/components/ui/input";
+import { getRoleBadge } from "@/utils/getRoleBadge";
+import { toast } from "sonner";
 
 export default function AllWallets() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit, setLimit] = useState("10");
 	const [filterType, setFilterType] = useState<string>("ALL");
+	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+	const [searchTerm, setSearchTerm] = useState<string>("");
 	const [sort, setSort] = useState<string>("-createdAt");
 	const { data, isLoading, error } = useGetWalletsQuery({
 		type: filterType === "ALL" ? undefined : filterType,
+		startDate: startDate === undefined ? undefined : startDate.toISOString(),
+		endDate: endDate === undefined ? undefined : endDate.toISOString(),
+		searchTerm,
 		sort,
 		page: currentPage,
 		limit,
 	});
+	const [updateWallet] = useUpdateWalletMutation();
 
-	console.log("wallets data", data);
+	const handleWalletStatus = async (
+		status: "ACTIVE" | "BLOCKED",
+		walletId: string
+	) => {
+		const toastId = toast.loading("Updating wallet status...");
+		try {
+			const res = await updateWallet({
+				id: walletId,
+				walletData: { status },
+			}).unwrap();
+			if (res.success) {
+				toast.success("Wallet status updated successfully", { id: toastId });
+			}
+		} catch (error) {
+			toast.error("Failed to update wallet", { id: toastId });
+		}
+	};
 
 	if (isLoading) {
 		return <TransactionsSkeleton />;
@@ -84,25 +113,36 @@ export default function AllWallets() {
 				<p className="text-muted-foreground">View and manage wallets</p>
 			</div>
 
-			<div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-				<div className="flex flex-col gap-2">
-					<div className="flex items-center gap-2">
+			<div className="flex flex-col gap-4 justify-between items-start">
+				<div className="flex gap-6 text-center">
+					<div>
+						<div className="text-xl font-bold">
+							<div className="text-muted-foreground">
+								Total Wallets :{" "}
+								<span className="text-blue-500">{data?.meta?.total || 0}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div className="flex gap-2 flex-wrap">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
-							Filter by type:
+							Filter by role:
 						</label>
 						<Select value={filterType} onValueChange={setFilterType}>
 							<SelectTrigger className="w-48">
-								<SelectValue placeholder="Select wallet type" />
+								<SelectValue placeholder="Select role" />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="ALL">All Wallets</SelectItem>
+								<SelectItem value="ALL">All Roles</SelectItem>
 								<SelectItem value="USER">User</SelectItem>
 								<SelectItem value="AGENT">Agent</SelectItem>
 							</SelectContent>
 						</Select>
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
 							Set Limit:
 						</label>
@@ -118,6 +158,31 @@ export default function AllWallets() {
 								<SelectItem value="50">50</SelectItem>
 							</SelectContent>
 						</Select>
+					</div>
+
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<DatePopover
+							label="Start Date"
+							date={startDate}
+							setDate={setStartDate}
+						/>
+						<DatePopover label="End Date" date={endDate} setDate={setEndDate} />
+					</div>
+				</div>
+
+				<div className="flex flex-wrap gap-2 ">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<label
+							htmlFor="transaction-filter"
+							className="text-sm font-medium w-48"
+						>
+							Search Wallet:
+						</label>
+						<Input
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							placeholder="Search by wallet type or status"
+						/>
 					</div>
 				</div>
 			</div>
@@ -209,6 +274,7 @@ export default function AllWallets() {
 									</TableHead>
 									<TableHead className="text-right">Wallet Status</TableHead>
 									<TableHead className="text-right">Role</TableHead>
+									<TableHead className="text-right">Action</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -223,7 +289,7 @@ export default function AllWallets() {
 														] || wallet.type}
 													</span>
 													<span
-														className={`px-2 py-1 rounded-full text-xs font-medium border ${getTransactionTypeBadge(
+														className={`px-2 py-1 rounded-full text-xs font-medium border ${getRoleBadge(
 															wallet.type
 														)}`}
 													>
@@ -263,12 +329,40 @@ export default function AllWallets() {
 												<span
 													className={cn(
 														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
-														wallet.type === "USER" && "bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
-														wallet.type === "AGENT" && "bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+														wallet.type === "USER" &&
+															"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														wallet.type === "AGENT" &&
+															"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20"
 													)}
 												>
 													{wallet.type}
 												</span>
+											</TableCell>
+											<TableCell className="text-right">
+												<div className="flex items-center justify-end gap-2">
+													<Button
+													variant={"outline"}
+														onClick={() =>
+															handleWalletStatus(
+																wallet.status === "ACTIVE"
+																	? "BLOCKED"
+																	: "ACTIVE",
+																wallet._id
+															)
+														}
+														className={cn(
+															"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring cursor-pointer",
+															wallet.status === "ACTIVE" &&
+																"bg-red-400/10 text-red-400 inset-ring-red-500/20",
+															wallet.status === "BLOCKED" &&
+																"bg-green-400/10 text-green-400 inset-ring-green-500/20"
+														)}
+													>
+														{wallet.status === "ACTIVE"
+															? "Block Wallet"
+															: "Unblock Wallet"}
+													</Button>
+												</div>
 											</TableCell>
 										</TableRow>
 									);

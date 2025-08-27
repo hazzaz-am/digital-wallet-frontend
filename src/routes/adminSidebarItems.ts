@@ -3,7 +3,6 @@ import AllUsers from "@/pages/admin/AllUsers";
 import AllWallets from "@/pages/admin/AllWallets";
 import Analytics from "@/pages/dashboard/Analytics";
 import Profile from "@/pages/dashboard/Profile";
-import Transactions from "@/pages/dashboard/Transactions";
 import type { ISidebarItem } from "@/types";
 
 export const adminSidebarItems: ISidebarItem[] = [
