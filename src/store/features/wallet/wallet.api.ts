@@ -22,7 +22,7 @@ export const authApi = baseApi.injectEndpoints({
 				url: "/wallet/top-up",
 				data: topUpData,
 			}),
-			invalidatesTags: ["WALLET"],
+			invalidatesTags: ["WALLET", "TRANSACTION"],
 		}),
 		sendMoney: builder.mutation({
 			query: (sendMoneyData) => ({
@@ -30,7 +30,7 @@ export const authApi = baseApi.injectEndpoints({
 				url: "/wallet/send-money",
 				data: sendMoneyData,
 			}),
-			invalidatesTags: ["WALLET"],
+			invalidatesTags: ["WALLET", "TRANSACTION"],
 		}),
 		cashIn: builder.mutation({
 			query: (cashInData) => ({
@@ -38,7 +38,7 @@ export const authApi = baseApi.injectEndpoints({
 				url: "/wallet/cash-in",
 				data: cashInData,
 			}),
-			invalidatesTags: ["WALLET"],
+			invalidatesTags: ["WALLET", "TRANSACTION"],
 		}),
 		cashOut: builder.mutation({
 			query: (cashOutData) => ({
@@ -46,7 +46,7 @@ export const authApi = baseApi.injectEndpoints({
 				url: "/wallet/cash-out",
 				data: cashOutData,
 			}),
-			invalidatesTags: ["WALLET"],
+			invalidatesTags: ["WALLET", "TRANSACTION"],
 		}),
 		getWallets: builder.query({
 			query: (params) => ({

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -23,7 +23,11 @@ import { getTransactionDirection } from "@/utils/getTransactionDirection";
 import { TRANSACTION_TYPES } from "@/constants/transactionsType";
 import { getTransactionTypeBadge } from "@/utils/getTransactionTypeBadge";
 import { formatDate } from "@/utils/formatDate";
-import { ArrowUpDown } from "lucide-react";
+import {
+	ArrowUpDown,
+	ChevronsDown,
+	ChevronsUp,
+} from "lucide-react";
 import {
 	Pagination,
 	PaginationContent,
@@ -32,37 +36,26 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from "@/components/ui/pagination";
+import { DatePopover } from "@/components/modules/dashboard/DatePopover";
+import { cn } from "@/lib/utils";
+import { useUserInfoQuery } from "@/store/features/auth/auth.api";
 
 export default function Transactions() {
+	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [limit, setLimit] = useState("10");
+	const [limit, setLimit] = useState("");
 	const [filterType, setFilterType] = useState<string>("ALL");
 	const [sort, setSort] = useState<string>("-createdAt");
 	const { data, isLoading, error } = useMyTransactionsQuery({
 		type: filterType === "ALL" ? undefined : filterType,
+		startDate: startDate?.toISOString(),
+		endDate: endDate?.toISOString(),
 		sort,
 		page: currentPage,
 		limit,
 	});
-
-	const stats = useMemo(() => {
-		if (!data?.data) return { total: 0, sent: 0, received: 0 };
-
-		const transactions = data.data;
-		const sent = transactions
-			.filter((t: Transaction) => ["SEND_MONEY", "CASH_OUT"].includes(t.type))
-			.reduce((sum: number, t: Transaction) => sum + t.amount, 0);
-
-		const received = transactions
-			.filter((t: Transaction) => ["CASH_IN", "TOP_UP"].includes(t.type))
-			.reduce((sum: number, t: Transaction) => sum + t.amount, 0);
-
-		return {
-			total: transactions.length,
-			sent,
-			received,
-		};
-	}, [data?.data]);
+	const { data: myProfile } = useUserInfoQuery(undefined);
 
 	if (isLoading) {
 		return <TransactionsSkeleton />;
@@ -92,6 +85,7 @@ export default function Transactions() {
 	}
 
 	const totalPage = data?.meta?.totalPage || 1;
+	const currentUser = myProfile?.data;
 
 	return (
 		<div className="space-y-6">
@@ -104,7 +98,7 @@ export default function Transactions() {
 			</div>
 
 			<div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-				<div className="flex flex-col gap-2">
+				<div className="flex flex-wrap gap-2">
 					<div className="flex items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by type:
@@ -140,27 +134,14 @@ export default function Transactions() {
 							</SelectContent>
 						</Select>
 					</div>
-				</div>
 
-				{/* Quick Stats */}
-				<div className="flex gap-6 text-center">
-					<div>
-						<div className="text-2xl font-bold text-green-600">
-							+{stats.received.toLocaleString()}
-						</div>
-						<div className="text-xs text-muted-foreground">Received</div>
-					</div>
-					<div>
-						<div className="text-2xl font-bold text-red-600">
-							-{stats.sent.toLocaleString()}
-						</div>
-						<div className="text-xs text-muted-foreground">Sent</div>
-					</div>
-					<div>
-						<div className="text-2xl font-bold text-blue-500">
-							{stats.total}
-						</div>
-						<div className="text-xs text-muted-foreground">Total</div>
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<DatePopover
+							label="Start Date"
+							date={startDate}
+							setDate={setStartDate}
+						/>
+						<DatePopover label="End Date" date={endDate} setDate={setEndDate} />
 					</div>
 				</div>
 			</div>
@@ -187,8 +168,17 @@ export default function Transactions() {
 								onClick={() => {
 									setFilterType("ALL");
 									setLimit("");
+									setStartDate(undefined);
+									setEndDate(undefined);
 								}}
-								className={filterType === "ALL" ? "hidden" : ""}
+								className={
+									filterType === "ALL" &&
+									limit === "" &&
+									startDate === undefined &&
+									endDate === undefined
+										? "hidden"
+										: ""
+								}
 							>
 								Clear Filter
 							</Button>
@@ -250,12 +240,19 @@ export default function Transactions() {
 										Amount
 										<ArrowUpDown size={12} />
 									</TableHead>
-									<TableHead className="text-right">Role</TableHead>
+									<TableHead className="text-right">Initiated By</TableHead>
+									<TableHead className="text-right">Receiver</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
 								{data?.data?.map((transaction: Transaction) => {
-									const direction = getTransactionDirection(transaction.type);
+									const direction = getTransactionDirection(
+										transaction.type,
+										transaction.initiatedBy,
+										transaction.receiverId,
+										currentUser?._id,
+										transaction.initiatedByRole
+									);
 
 									return (
 										<TableRow key={transaction._id}>
@@ -286,16 +283,71 @@ export default function Transactions() {
 												</span>
 											</TableCell>
 											<TableCell className="text-right">
-												<div
-													className={`text-sm font-bold ${direction.amountClass}`}
-												>
-													{direction.prefix}
-													{transaction.amount.toLocaleString()} BDT
+												<div className="flex justify-end gap-2 items-center">
+													<span>
+														{direction.isIncoming && (
+															<ChevronsUp
+																color="green"
+																hanging={14}
+																width={14}
+															/>
+														)}
+														{direction.isOutgoing && (
+															<ChevronsDown
+																color="red"
+																hanging={14}
+																width={14}
+															/>
+														)}
+													</span>
+													<span
+														className={cn(
+															"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+															direction.amountClass
+														)}
+													>
+														{transaction.amount.toLocaleString()} BDT
+													</span>
 												</div>
 											</TableCell>
 											<TableCell className="text-right">
-												<span className="text-xs text-muted-foreground">
-													{transaction.initiatedByRole}
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														transaction.initiatedByRole === "USER" &&
+															"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														transaction.initiatedByRole === "AGENT" &&
+															"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+														!transaction?.initiatedByRole &&
+															"bg-pink-400/10 text-pink-400 inset-ring-pink-500/20",
+														transaction.initiatedBy === currentUser._id &&
+															"bg-blue-400/10 text-blue-400 inset-ring-blue-500/20"
+													)}
+												>
+													{transaction.initiatedBy === currentUser._id
+														? "me"
+														: transaction.initiatedByRole}
+												</span>
+											</TableCell>
+											<TableCell className="text-right">
+												<span
+													className={cn(
+														"font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring",
+														transaction.receiverRole === "USER" &&
+															"bg-yellow-400/10 text-yellow-400 inset-ring-yellow-500/20",
+														transaction.receiverRole === "AGENT" &&
+															"bg-purple-400/10 text-purple-400 inset-ring-purple-500/20",
+														!transaction?.receiverRole &&
+															"bg-pink-400/10 text-pink-400 inset-ring-pink-500/20",
+														transaction.receiverId === currentUser._id &&
+															"bg-blue-400/10 text-blue-400 inset-ring-blue-500/20"
+													)}
+												>
+													{transaction.receiverId === currentUser._id
+														? "me"
+														: transaction.receiverRole
+														? transaction.receiverRole
+														: "N/A"}
 												</span>
 											</TableCell>
 										</TableRow>
