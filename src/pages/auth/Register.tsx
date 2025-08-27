@@ -12,7 +12,7 @@ export default function RegisterPage() {
 	}
 
 	if (userInfo?.data) {
-		return <Navigate to="/" replace={true} />;
+		return <Navigate to={`/${userInfo?.data?.role.toLowerCase()}/me`} replace={true} />;
 	}
 
 	return (

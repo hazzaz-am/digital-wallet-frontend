@@ -1,4 +1,5 @@
 import Logo from "@/assets/icons/Logo";
+import { Link } from "react-router";
 
 export default function Footer() {
 	return (
@@ -11,8 +12,8 @@ export default function Footer() {
 						</div>
 
 						<p className="mt-4 max-w-xs text-muted-foreground/80">
-							Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non
-							cupiditate quae nam molestias.
+							Secure, fast, and reliable digital wallet solution for all your
+							financial transactions and money management needs.
 						</p>
 
 						<ul className="mt-8 flex gap-6">
@@ -136,137 +137,138 @@ export default function Footer() {
 
 					<div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
 						<div>
-							<p className="font-medium ">Services</p>
+							<p className="font-medium">Services</p>
 
 							<ul className="mt-6 space-y-4 text-sm">
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										1on1 Coaching{" "}
-									</a>
+									<Link to="/features" className=" transition hover:opacity-75">
+										Digital Wallet
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Company Review{" "}
-									</a>
+									<Link to="/features" className=" transition hover:opacity-75">
+										Money Transfer
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Accounts Review{" "}
-									</a>
+									<Link to="/features" className=" transition hover:opacity-75">
+										Cash In/Out
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										HR Consulting{" "}
-									</a>
+									<Link to="/features" className=" transition hover:opacity-75">
+										Agent Network
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										SEO Optimisation{" "}
-									</a>
+									<Link to="/features" className=" transition hover:opacity-75">
+										Transaction History
+									</Link>
 								</li>
 							</ul>
 						</div>
 
 						<div>
-							<p className="font-medium ">Company</p>
+							<p className="font-medium">Company</p>
 
 							<ul className="mt-6 space-y-4 text-sm">
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										About{" "}
-									</a>
+									<Link to="/about" className=" transition hover:opacity-75">
+										About Us
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Meet the Team{" "}
-									</a>
+									<Link to="/careers" className=" transition hover:opacity-75">
+										Careers
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Accounts Review{" "}
-									</a>
+									<Link to="/pricing" className=" transition hover:opacity-75">
+										Pricing
+									</Link>
 								</li>
 							</ul>
 						</div>
 
 						<div>
-							<p className="font-medium ">Helpful Links</p>
+							<p className="font-medium">Support</p>
 
 							<ul className="mt-6 space-y-4 text-sm">
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Contact{" "}
-									</a>
+									<Link to="/contact" className=" transition hover:opacity-75">
+										Contact Us
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										FAQs{" "}
-									</a>
+									<Link to="/faq" className=" transition hover:opacity-75">
+										FAQs
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Live Chat{" "}
-									</a>
+									<Link
+										to="/auth/login"
+										className=" transition hover:opacity-75"
+									>
+										Login
+									</Link>
+								</li>
+
+								<li>
+									<Link
+										to="/auth/register"
+										className=" transition hover:opacity-75"
+									>
+										Register
+									</Link>
 								</li>
 							</ul>
 						</div>
 
 						<div>
-							<p className="font-medium ">Legal</p>
+							<p className="font-medium">Legal</p>
 
 							<ul className="mt-6 space-y-4 text-sm">
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Accessibility{" "}
-									</a>
+									<Link to="/privacy" className=" transition hover:opacity-75">
+										Privacy Policy
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Returns Policy{" "}
-									</a>
+									<Link to="/terms" className=" transition hover:opacity-75">
+										Terms of Service
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										{" "}
-										Refund Policy{" "}
-									</a>
+									<Link to="/security" className=" transition hover:opacity-75">
+										Security
+									</Link>
 								</li>
 
 								<li>
-									<a href="#" className=" transition hover:opacity-75">
-										Hiring-3 Statistics
-									</a>
+									<Link
+										to="/compliance"
+										className=" transition hover:opacity-75"
+									>
+										Compliance
+									</Link>
 								</li>
 							</ul>
 						</div>
 					</div>
 				</div>
 
-				<p className="text-xs ">
-					&copy; 2022. Company Name. All rights reserved.
+				<p className="text-xs">
+					&copy; 2025. Digital Wallet. All rights reserved.
 				</p>
 			</div>
 		</footer>
