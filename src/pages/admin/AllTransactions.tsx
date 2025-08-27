@@ -32,18 +32,26 @@ import {
 } from "@/components/ui/pagination";
 import { TransactionsSkeleton } from "../dashboard/TransactionsSkeleton";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { DatePopover } from "@/components/modules/dashboard/DatePopover";
 
 export default function AllTransactions() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [limit, setLimit] = useState("10");
 	const [filterType, setFilterType] = useState<string>("ALL");
 	const [initiatedByRole, setInitiatedByRole] = useState<string>("ALL");
+	const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+	const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 	const [receiverRole, setreceiverRole] = useState<string>("ALL");
 	const [sort, setSort] = useState<string>("-createdAt");
+	const [searchTerm, setSearchTerm] = useState<string>("");
 	const { data, isLoading, error } = useGetAllTransactionsQuery({
 		type: filterType === "ALL" ? undefined : filterType,
 		initiatedByRole: initiatedByRole === "ALL" ? undefined : initiatedByRole,
 		receiverRole: receiverRole === "ALL" ? undefined : receiverRole,
+		startDate: startDate === undefined ? undefined : startDate.toISOString(),
+		endDate: endDate === undefined ? undefined : endDate.toISOString(),
+		searchTerm,
 		sort,
 		page: currentPage,
 		limit,
@@ -102,7 +110,7 @@ export default function AllTransactions() {
 				</div>
 
 				<div className="flex gap-2 flex-wrap">
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transaction-filter" className="text-sm font-medium">
 							Filter by type:
 						</label>
@@ -120,7 +128,7 @@ export default function AllTransactions() {
 						</Select>
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
 							Set Limit:
 						</label>
@@ -138,7 +146,7 @@ export default function AllTransactions() {
 						</Select>
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
 							Intiated by:
 						</label>
@@ -154,7 +162,7 @@ export default function AllTransactions() {
 						</Select>
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
 						<label htmlFor="transactions-limit" className="text-sm font-medium">
 							Recived by:
 						</label>
@@ -168,6 +176,31 @@ export default function AllTransactions() {
 								<SelectItem value="AGENT">Agent</SelectItem>
 							</SelectContent>
 						</Select>
+					</div>
+
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<DatePopover
+							label="Start Date"
+							date={startDate}
+							setDate={setStartDate}
+						/>
+						<DatePopover label="End Date" date={endDate} setDate={setEndDate} />
+					</div>
+				</div>
+
+				<div className="flex flex-wrap gap-2 ">
+					<div className="flex flex-col sm:flex-row sm:items-center gap-2">
+						<label
+							htmlFor="transaction-filter"
+							className="text-sm font-medium w-48"
+						>
+							Search Transaction:
+						</label>
+						<Input
+							value={searchTerm}
+							onChange={(e) => setSearchTerm(e.target.value)}
+							placeholder="Search by role"
+						/>
 					</div>
 				</div>
 			</div>
