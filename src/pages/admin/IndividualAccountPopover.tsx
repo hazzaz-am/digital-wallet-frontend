@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { useGetUserByIdQuery } from "@/store/features/auth/auth.api";
 import { getRoleBadge } from "@/utils/getRoleBadge";
 import { getStatusBadge } from "@/utils/getStatusBadge";
