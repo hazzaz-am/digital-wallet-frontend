@@ -73,16 +73,6 @@ export default function IndividualAccountPopover({
 								</span>
 							</DialogDescription>
 						</DialogHeader>
-						{/* <div className="flex items-center justify-between">
-							<h3 className="text-lg font-semibold">Account Details</h3>
-							<span
-								className={`font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring cursor-pointer ${getRoleBadge(
-									user?.data?.role || ""
-								)}`}
-							>
-								{user?.data?.role}
-							</span>
-						</div> */}
 
 						<Separator />
 

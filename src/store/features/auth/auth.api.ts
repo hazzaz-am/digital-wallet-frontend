@@ -43,7 +43,7 @@ export const authApi = baseApi.injectEndpoints({
 				url: `/user/${id}`,
 				data: updatedData,
 			}),
-			invalidatesTags: ["USER"],
+			invalidatesTags: ["USER", "WALLET"],
 		}),
 		getAllUsers: builder.query({
 			query: (params) => ({
