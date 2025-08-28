@@ -81,10 +81,11 @@ export default function AllWallets() {
 	};
 
 		const handleDeleteWallet = async (walletId: string) => {
+			const id = walletId
 			const toastId = toast.loading("Deleting wallet...");
 	
 			try {
-				const res = await deleteWallet(walletId).unwrap();
+				const res = await deleteWallet(id).unwrap();
 				if (res.success) {
 					toast.success("Wallet deleted successfully!", { id: toastId });
 				}
