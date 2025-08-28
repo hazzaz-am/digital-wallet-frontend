@@ -69,7 +69,7 @@ export default function AllUsers() {
 		try {
 			const res = await updateUserInfo({
 				id: userId,
-				updatedData: { isDeleted: !user.isDeleted },
+				updatedData: { isDeleted: user.isDeleted === true ? false : true },
 			}).unwrap();
 			if (res.success) {
 				toast.success("User account status updated successfully", {
