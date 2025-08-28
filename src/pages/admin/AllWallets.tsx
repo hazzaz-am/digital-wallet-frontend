@@ -28,6 +28,7 @@ import {
 	PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
+	useDeleteWalletMutation,
 	useGetWalletsQuery,
 	useUpdateWalletMutation,
 } from "@/store/features/wallet/wallet.api";
@@ -57,6 +58,7 @@ export default function AllWallets() {
 		limit,
 	});
 	const [updateWallet] = useUpdateWalletMutation();
+	const [deleteWallet] = useDeleteWalletMutation();
 
 	const handleWalletStatus = async (
 		status: "ACTIVE" | "BLOCKED",
@@ -72,9 +74,26 @@ export default function AllWallets() {
 				toast.success("Wallet status updated successfully", { id: toastId });
 			}
 		} catch (error: any) {
-			toast.error(error?.data?.message || "Failed to update wallet", { id: toastId });
+			toast.error(error?.data?.message || "Failed to update wallet", {
+				id: toastId,
+			});
 		}
 	};
+
+		const handleDeleteWallet = async (walletId: string) => {
+			const toastId = toast.loading("Deleting wallet...");
+	
+			try {
+				const res = await deleteWallet(walletId).unwrap();
+				if (res.success) {
+					toast.success("Wallet deleted successfully!", { id: toastId });
+				}
+			} catch (error: any) {
+				toast.error(error?.data?.message || "Failed to delete wallet. Please try again.", {
+					id: toastId,
+				});
+			}
+		};
 
 	if (isLoading) {
 		return <TransactionsSkeleton />;
@@ -275,6 +294,7 @@ export default function AllWallets() {
 									<TableHead className="text-right">Wallet Status</TableHead>
 									<TableHead className="text-right">Role</TableHead>
 									<TableHead className="text-right">Wallet Approval</TableHead>
+									<TableHead className="text-right">Action</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -341,7 +361,7 @@ export default function AllWallets() {
 											<TableCell className="text-right">
 												<div className="flex items-center justify-end gap-2">
 													<Button
-													variant={"outline"}
+														variant={"outline"}
 														onClick={() =>
 															handleWalletStatus(
 																wallet.status === "ACTIVE"
@@ -363,6 +383,15 @@ export default function AllWallets() {
 															: "Unblock Wallet"}
 													</Button>
 												</div>
+											</TableCell>
+											<TableCell className="text-right">
+												<Button
+													variant={"outline"}
+													onClick={() => handleDeleteWallet(wallet._id)}
+													className="font-mono px-2 py-1 text-xs font-medium inline-flex items-center rounded-md inset-ring cursor-pointer bg-red-400/10 text-red-400 inset-ring-red-400/20"
+												>
+													Delete
+												</Button>
 											</TableCell>
 										</TableRow>
 									);
