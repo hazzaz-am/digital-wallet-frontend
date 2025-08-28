@@ -120,25 +120,6 @@ export default function IndividualAccountPopover({
 								</span>
 							</div>
 
-							<div className="grid grid-cols-4 gap-2 text-sm">
-								<span className="font-medium text-gray-600 col-span-2">
-									Wallet Status:
-								</span>
-								<div className="col-span-2">
-									<span
-										className={cn(
-											"inline-block px-2 py-1 text-xs font-medium rounded border",
-											user?.data?.walletStatus === "ACTIVE" &&
-												"bg-green-400/10 text-green-400 inset-ring-green-500/20",
-											user?.data?.walletStatus === "BLOCKED" &&
-												"bg-red-400/10 text-red-400 inset-ring-red-500/20"
-										)}
-									>
-										{user?.data?.walletStatus || "N/A"}
-									</span>
-								</div>
-							</div>
-
 							<Separator />
 
 							<div className="grid grid-cols-4 gap-2 text-sm">
